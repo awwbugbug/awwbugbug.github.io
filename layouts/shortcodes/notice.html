@@ -1,0 +1,12 @@
+{{ $type := .Get "type" | default "info" }}
+<div class="notice notice-{{ $type }}">
+    <div class="notice-title">
+        {{ if eq $type "info" }} 💡 提示 
+        {{ else if eq $type "warning" }} ⚠️ 注意 
+        {{ else if eq $type "tip" }} 📌 技巧 
+        {{ end }}
+    </div>
+    <div class="notice-content">
+        {{ .Inner | markdownify }}
+    </div>
+</div>

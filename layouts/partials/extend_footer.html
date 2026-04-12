@@ -1,0 +1,315 @@
+{{- /* ============================================================
+     Global Warm Orb + Settings Panel
+     ──────────────────────────────────────────────────────────
+     STACKING ORDER
+       html background  → z-index: auto  (solid --theme color)
+       #global-orb-layer → z-index: 1    (warm glow, fixed)
+       body              → z-index: 2    (transparent, all content)
+       #settings-*       → z-index: 9998 / 9999
+
+     The orb lives BETWEEN the solid page background and the
+     transparent body. Glass surfaces on body use backdrop-filter
+     to blur the orb behind them, creating the "light shining
+     through frosted glass" effect.
+     ============================================================ */ -}}
+
+<!-- ═══ Galaxy Layer ═══ -->
+<div id="galaxy-layer" aria-hidden="true">
+    <div id="galaxy-core"></div>
+    <div id="stars-1a"></div><div id="stars-1b"></div><div id="stars-1c"></div>
+    <div id="stars-2a"></div><div id="stars-2b"></div><div id="stars-2c"></div>
+    <div id="stars-3a"></div><div id="stars-3b"></div><div id="stars-3c"></div>
+</div>
+
+<!-- ═══ Warm Orb Layer ═══ -->
+<div id="global-orb-layer" aria-hidden="true">
+    <div id="global-orb"></div>
+</div>
+
+<!-- ═══ Settings Panel ═══ -->
+<button id="settings-toggle" aria-label="Display Settings" title="Display Settings">⚙</button>
+<div id="settings-panel" role="dialog" aria-label="Display Settings">
+    <h4>Display Settings</h4>
+
+    <div class="settings-row">
+        <label>
+            Glass Opacity
+            <span id="glass-val">0.50</span>
+        </label>
+        <input type="range" id="glass-slider" min="0" max="1" step="0.01" value="0.50">
+    </div>
+
+    <div class="settings-row">
+        <label>
+            Glow Intensity
+            <span id="glow-val">0.90</span>
+        </label>
+        <input type="range" id="glow-slider" min="0" max="1" step="0.01" value="0.90">
+    </div>
+
+    <div class="settings-row">
+        <label>
+            Star Hue
+            <span id="star-hue-val">30</span>
+        </label>
+        <input type="range" id="star-hue-slider" min="0" max="360" step="1" value="30">
+    </div>
+
+    <!-- ═══ EXTENSIBILITY: Add more settings rows here ═══
+    <div class="settings-row">
+        <label>
+            Blur Radius
+            <span id="blur-val">24</span>
+        </label>
+        <input type="range" id="blur-slider" min="0" max="60" step="1" value="24">
+    </div>
+    -->
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    // ── §0 Galaxy Generator (Zero CPU overhead after init) ───────
+    // Generates static box-shadow coordinates for thousands of stars
+    // The browser compositor handles the CSS `transform: rotate` entirely on GPU
+    (function initGalaxy() {
+        var ids = ['1a','1b','1c','2a','2b','2c','3a','3b','3c'];
+        var exists = document.getElementById('stars-' + ids[0]);
+        if (!exists) return;
+
+        function makeStars(count, maxRadius) {
+            var arr = [];
+            var colors = [
+                '255,240,220', // Warm White
+                '255,210,160', // Soft Orange
+                '255,180,120', // Amber
+                '255,250,250'  // Bright White
+            ];
+            for (var i = 0; i < count; i++) {
+                var d = Math.pow(Math.random(), 1.5); // Density falls off
+                var r = d * maxRadius;
+                var theta = Math.random() * 2 * Math.PI;
+                var x = (Math.cos(theta) * r).toFixed(1);
+                var y = (Math.sin(theta) * r).toFixed(1);
+                var alpha = (Math.random() * 0.7 + 0.3).toFixed(2);
+                var c = colors[Math.floor(Math.random() * colors.length)];
+                arr.push(x + 'px ' + y + 'px rgba(' + c + ',' + alpha + ')');
+            }
+            return arr.join(',');
+        }
+
+        // Generate radius 80% of largest screen dimension
+        var maxR = Math.max(window.innerWidth, window.innerHeight) * 0.9;
+        maxR = Math.max(maxR, 800); // At least 800px
+
+        ids.forEach(function(id) {
+            var el = document.getElementById('stars-' + id);
+            var count = id.startsWith('1') ? 170 : (id.startsWith('2') ? 80 : 25);
+            if (el) el.style.boxShadow = makeStars(count, maxR);
+        });
+    })();
+
+    // ── §1 Orb Physics Engine ──────────────────────────────────
+    var orb = document.getElementById('global-orb');
+    if (!orb) return;
+
+    var ORB_SIZE = 550;
+    var LERP     = 0.05;
+
+    var tX = window.innerWidth  / 2;
+    var tY = window.innerHeight / 2;
+    var cX = tX;
+    var cY = tY;
+
+    var rootForOrb = document.documentElement;
+
+    document.addEventListener('mousemove', function (e) {
+        tX = e.clientX;
+        tY = e.clientY;
+    });
+
+    function tick () {
+        requestAnimationFrame(tick);
+
+        // Performance Optimization: 
+        // 1. Do not update transform in light mode (orb is invisible)
+        if (rootForOrb.dataset.theme !== 'dark') return;
+
+        // 2. Stop repaints when orb has reached the target
+        var dx = tX - cX;
+        var dy = tY - cY;
+        if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) return;
+
+        cX += dx * LERP;
+        cY += dy * LERP;
+        orb.style.transform =
+            'translate3d(' + (cX - ORB_SIZE / 2) + 'px,' +
+                             (cY - ORB_SIZE / 2) + 'px, 0)';
+    }
+    requestAnimationFrame(tick);
+
+    // ── §2 Settings Panel Toggle ───────────────────────────────
+    var toggle = document.getElementById('settings-toggle');
+    var panel  = document.getElementById('settings-panel');
+
+    if (toggle && panel) {
+        toggle.addEventListener('click', function () {
+            panel.classList.toggle('open');
+        });
+
+        // Close panel on outside click
+        document.addEventListener('click', function (e) {
+            if (!panel.contains(e.target) && e.target !== toggle) {
+                panel.classList.remove('open');
+            }
+        });
+    }
+
+    // ── §3 Live Sliders ────────────────────────────────────────
+    var root = document.documentElement;
+
+    // Helper: read persisted value or return fallback
+    function load (key, fallback) {
+        var v = localStorage.getItem(key);
+        return v !== null ? parseFloat(v) : fallback;
+    }
+
+    // Glass Opacity Slider
+    var glassSlider = document.getElementById('glass-slider');
+    var glassVal    = document.getElementById('glass-val');
+
+    function applyGlass (v) {
+        root.style.setProperty('--glass-opacity', v);
+        // Re-compute glass-bg for both light and dark
+        var isDark = root.dataset.theme === 'dark';
+        if (isDark) {
+            root.style.setProperty('--glass-bg', 'rgba(22, 22, 26, ' + v + ')');
+        } else {
+            root.style.setProperty('--glass-bg', 'rgba(255, 255, 255, ' + v + ')');
+        }
+        if (glassVal) glassVal.textContent = parseFloat(v).toFixed(2);
+    }
+
+    if (glassSlider) {
+        var gInit = load('settings-glass', 0.50);
+        glassSlider.value = gInit;
+        applyGlass(gInit);
+
+        glassSlider.addEventListener('input', function () {
+            var v = parseFloat(this.value);
+            applyGlass(v);
+            localStorage.setItem('settings-glass', v);
+        });
+    }
+
+    // Glow Intensity Slider
+    var glowSlider = document.getElementById('glow-slider');
+    var glowVal    = document.getElementById('glow-val');
+
+    function applyGlow (v) {
+        root.style.setProperty('--orb-intensity', v);
+        if (orb) {
+            // Directly apply so it takes effect immediately
+            var isDark = root.dataset.theme === 'dark';
+            orb.style.opacity = isDark ? v : 0;
+        }
+        if (glowVal) glowVal.textContent = parseFloat(v).toFixed(2);
+    }
+
+    if (glowSlider) {
+        var oInit = load('settings-glow', 0.90);
+        glowSlider.value = oInit;
+        applyGlow(oInit);
+
+        glowSlider.addEventListener('input', function () {
+            var v = parseFloat(this.value);
+            applyGlow(v);
+            localStorage.setItem('settings-glow', v);
+        });
+    }
+
+    // Star Hue Slider
+    var hueSlider = document.getElementById('star-hue-slider');
+    var hueVal    = document.getElementById('star-hue-val');
+    
+    function applyHue(v) {
+        root.style.setProperty('--core-hue', v);
+        if (hueVal) hueVal.textContent = v;
+    }
+    
+    if (hueSlider) {
+        var hInit = load('settings-core-hue', 30);
+        hueSlider.value = hInit;
+        applyHue(hInit);
+        
+        hueSlider.addEventListener('input', function() {
+            var v = parseInt(this.value);
+            applyHue(v);
+            localStorage.setItem('settings-core-hue', v);
+        });
+    }
+
+    // ── §4 Theme Change Listener ───────────────────────────────
+    // When user toggles dark/light, re-apply glass & glow values
+    var observer = new MutationObserver(function () {
+        applyGlass(parseFloat(glassSlider ? glassSlider.value : 0.50));
+        applyGlow(parseFloat(glowSlider ? glowSlider.value : 0.90));
+    });
+    observer.observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+
+})();
+</script>
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   §5  Page Transition Engine
+   ──────────────────────────────────────────────────────────────
+   Intercepts internal link clicks → plays exit animation →
+   navigates after animation completes.
+   Enter animation is pure CSS (@keyframes page-enter) and
+   fires automatically on every page load.
+   ════════════════════════════════════════════════════════════════ */
+(function () {
+    'use strict';
+
+    var EXIT_DURATION = 280; // ms — matches CSS .page-exit transition
+
+    // Only intercept same-origin, non-anchor, non-special links
+    function shouldIntercept (anchor) {
+        if (!anchor || !anchor.href) return false;
+        if (anchor.target === '_blank') return false;
+        if (anchor.hasAttribute('download')) return false;
+        if (anchor.origin !== window.location.origin) return false;
+        // Skip hash-only links on the same page
+        if (anchor.pathname === window.location.pathname &&
+            anchor.hash) return false;
+        return true;
+    }
+
+    document.addEventListener('click', function (e) {
+        // Walk up from event target to find nearest <a>
+        var anchor = e.target.closest('a');
+        if (!anchor) return;
+        if (!shouldIntercept(anchor)) return;
+        if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+
+        e.preventDefault();
+        var href = anchor.href;
+
+        // Trigger exit animation by adding class to <body>
+        document.body.classList.add('page-exit');
+
+        // Navigate after the exit animation completes
+        setTimeout(function () {
+            window.location.href = href;
+        }, EXIT_DURATION);
+    });
+
+    // Handle browser back/forward — also animate entry
+    window.addEventListener('pageshow', function (e) {
+        // Remove exit class in case of bfcache restore
+        document.body.classList.remove('page-exit');
+    });
+})();
+</script>

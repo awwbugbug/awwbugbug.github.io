@@ -1,0 +1,26 @@
+<div class="project-card">
+    <div class="project-card__header">
+      <h3>{{ .Get "title" }}</h3>
+      <span class="project-card__status">{{ .Get "status" }}</span>
+    </div>
+  
+    <p class="project-card__desc">
+      {{ .Get "desc" }}
+    </p>
+  
+    <div class="project-card__tags">
+      {{ $tags := split (.Get "tags") "," }}
+      {{ range $tags }}
+        <span class="project-tag">{{ . | strings.TrimSpace }}</span>
+      {{ end }}
+    </div>
+  
+    <div class="project-card__links">
+      {{ with .Get "link1_text" }}
+        <a class="project-link" href='{{ $.Get "link1_url" }}'>{{ . }}</a>
+      {{ end }}
+      {{ with .Get "link2_text" }}
+        <a class="project-link secondary" href='{{ $.Get "link2_url" }}'>{{ . }}</a>
+      {{ end }}
+    </div>
+  </div>

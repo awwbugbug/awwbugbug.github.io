@@ -1,0 +1,139 @@
+baseURL = 'https://awwbugbug.github.io/'
+languageCode = 'zh-cn'
+title = 'ZDZ Blog'
+theme = 'PaperMod'
+copyright = "© 2026 ZDZ. All rights reserved."
+
+[pagination]
+  pagerSize = 10
+
+[outputs]
+  home = ['HTML', 'RSS', 'JSON']
+
+[params]
+  math = true
+  env = 'production'
+  title = 'ZDZ Blog'
+  description = 'ZDZ 的个人博客与项目记录'
+  keywords = ['Blog', 'Portfolio', 'Computer Science', 'AI', 'Unity']
+  author = 'ZDZ'
+  defaultTheme = 'auto'
+  disableThemeToggle = false
+  ShowReadingTime = true
+  ShowShareButtons = false
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowWordCount = true
+  ShowToc = true
+  hideFooter = false
+  ShowRssButtonInSectionTermList = true
+  mainSections = ['posts']
+  images = ["/avatar.jpg"] # SEO Meta Tags
+  
+  [params.label]
+    text = "ZDZ"
+    icon = "/avatar.jpg"
+    iconHeight = 35
+
+  [params.assets]
+    favicon = '/avatar.jpg'
+    favicon16x16 = '/avatar.jpg'
+    favicon32x32 = '/avatar.jpg'
+    apple_touch_icon = '/avatar.jpg'
+
+  [params.profileMode]
+    enabled = true
+    title = "ZDZ"
+    subtitle = "计算机方向个人主页与博客。记录项目、学习笔记、研究过程与作品展示。"
+    imageUrl = "/avatar.jpg"
+    imageTitle = "ZDZ Avatar"
+    imageWidth = 160
+    imageHeight = 160
+
+    [[params.profileMode.buttons]]
+      name = "Projects"
+      url = "/projects/"
+
+    [[params.profileMode.buttons]]
+      name = "Posts"
+      url = "/posts/"
+
+    [[params.profileMode.buttons]]
+      name = "About"
+      url = "/about/"
+
+  [[params.socialIcons]]
+    name = 'github'
+    url = 'https://github.com/awwbugbug'
+
+  [[params.socialIcons]]
+    name = 'email'
+    url = 'mailto:zdz1342979524@gmail.com'
+
+  [[params.socialIcons]]
+    name = 'rss'
+    url = '/index.xml'
+
+  [params.comments.giscus]
+    repo = "YOUR_GITHUB_USER/YOUR_REPO_NAME"
+    repoId = "YOUR_REPO_ID"
+    category = "Announcements"
+    categoryId = "YOUR_CATEGORY_ID"
+    mapping = "pathname"
+    strict = "0"
+    reactionsEnabled = "1"
+    emitMetadata = "0"
+    inputPosition = "bottom"
+    theme = "transparent_dark"
+    lang = "zh-CN"
+
+  [params.analytics.umami]
+    website_id = "YOUR_UMAMI_WEBSITE_ID"
+    url = "https://YOUR_UMAMI_DOMAIN/script.js"
+
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+  series = "series"
+
+[[menu.main]]
+  identifier = 'projects'
+  name = 'Projects'
+  url = '/projects/'
+  weight = 5
+
+[[menu.main]]
+  identifier = 'about'
+  name = 'About'
+  url = '/about/'
+  weight = 10
+
+[[menu.main]]
+  identifier = 'posts'
+  name = 'Posts'
+  url = '/posts/'
+  weight = 20
+
+[[menu.main]]
+  identifier = 'archives'
+  name = 'Archives'
+  url = '/archives/'
+  weight = 30
+
+[[menu.main]]
+  identifier = 'search'
+  name = 'Search'
+  url = '/search/'
+  weight = 40
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+[markup.highlight]
+  noClasses = false
+  # 选择一个高级感的主题，例如 github-dark 或 dracula
+  style = "github-dark" 
+  lineNumbersInTable = true
