@@ -13,6 +13,11 @@
      through frosted glass" effect.
      ============================================================ */ -}}
 
+<!-- ═══ Aurora Layer (light mode pastel gradient) ═══ -->
+<div id="aurora-layer" aria-hidden="true">
+    <div class="aurora-vignette"></div>
+</div>
+
 <!-- ═══ Galaxy Layer ═══ -->
 <div id="galaxy-layer" aria-hidden="true">
     <div id="galaxy-core"></div>
@@ -269,11 +274,20 @@
    navigates after animation completes.
    Enter animation is pure CSS (@keyframes page-enter) and
    fires automatically on every page load.
+
+   FIXES (v2):
+   • Navigation lock prevents double-click / rapid-click queueing
+     multiple destinations (误切 fix)
+   • pointer-events: none during exit prevents stray clicks
+   • Reduced exit time 280→180ms for snappier feel
+   • Safety timeout prevents page from getting stuck
    ════════════════════════════════════════════════════════════════ */
 (function () {
     'use strict';
 
-    var EXIT_DURATION = 280; // ms — matches CSS .page-exit transition
+    var EXIT_DURATION = 180;  // ms — keep short for snappy feel
+    var SAFETY_MARGIN = 60;   // extra ms before force-navigate
+    var navigating = false;   // lock — only one transition at a time
 
     // Only intercept same-origin, non-anchor, non-special links
     function shouldIntercept (anchor) {
@@ -284,10 +298,20 @@
         // Skip hash-only links on the same page
         if (anchor.pathname === window.location.pathname &&
             anchor.hash) return false;
+        // Skip if link points to the current page (no-op)
+        if (anchor.pathname === window.location.pathname &&
+            !anchor.hash) return false;
         return true;
     }
 
     document.addEventListener('click', function (e) {
+        // If a transition is already in progress, block ALL clicks
+        if (navigating) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
+
         // Walk up from event target to find nearest <a>
         var anchor = e.target.closest('a');
         if (!anchor) return;
@@ -295,21 +319,35 @@
         if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
 
         e.preventDefault();
+
+        // Lock navigation — no more clicks accepted
+        navigating = true;
         var href = anchor.href;
 
-        // Trigger exit animation by adding class to <body>
+        // Block pointer events on entire page to prevent mis-clicks
+        document.body.style.pointerEvents = 'none';
+
+        // Trigger exit animation
         document.body.classList.add('page-exit');
 
-        // Navigate after the exit animation completes
+        // Navigate after exit animation
+        // Use a safety timeout that's slightly longer than CSS transition
         setTimeout(function () {
             window.location.href = href;
-        }, EXIT_DURATION);
+        }, EXIT_DURATION + SAFETY_MARGIN);
+    }, true);  // Use capture phase to intercept before other handlers
+
+    // Handle browser back/forward + bfcache restore
+    window.addEventListener('pageshow', function (e) {
+        // Always clean up state — essential for bfcache restores
+        navigating = false;
+        document.body.classList.remove('page-exit');
+        document.body.style.pointerEvents = '';
     });
 
-    // Handle browser back/forward — also animate entry
-    window.addEventListener('pageshow', function (e) {
-        // Remove exit class in case of bfcache restore
-        document.body.classList.remove('page-exit');
-    });
+    // Extra safety: also clean up on regular page load
+    // (pageshow doesn't always fire in every browser configuration)
+    document.body.classList.remove('page-exit');
+    document.body.style.pointerEvents = '';
 })();
 </script>
