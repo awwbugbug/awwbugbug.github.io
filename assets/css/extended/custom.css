@@ -45,7 +45,9 @@
    the glass cards via backdrop-filter.
    ================================================================ */
 html {
-  background: var(--theme);  /* solid base color lives here */
+  background: var(--theme) !important;  /* solid base color lives here */
+  min-height: 100vh;
+  transition: none !important;          /* CRITICAL: Fix WebKit backdrop-filter double-paint bug on theme toggle */
 }
 
 body {
@@ -53,6 +55,8 @@ body {
   letter-spacing: 0.01em;
   -webkit-font-smoothing: antialiased;
   background: transparent !important;    /* CRITICAL — let the orb show through */
+  min-height: 100vh;
+  margin: 0;
 }
 
 /* ─── Content layers ABOVE the orb ─────────────────────────────
@@ -79,7 +83,9 @@ body {
   pointer-events: none;
   overflow: hidden;
   opacity: 0;                /* Hidden by default */
-  transition: opacity 1.5s ease;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: opacity;
 }
 
 /* Show only in dark mode */
@@ -159,7 +165,9 @@ html[data-theme='dark'] #galaxy-layer {
   pointer-events: none;
   overflow: hidden;
   opacity: 1;
-  transition: opacity 1.2s ease;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: opacity;
 }
 
 /* Hide aurora in dark mode */
@@ -223,7 +231,7 @@ html[data-theme='dark'] #aurora-layer {
     circle at 50% 50%,
     rgba(255, 255, 255, 0.45) 0%,
     rgba(255, 255, 255, 0.10) 55%,
-    transparent 80%
+    rgba(255, 255, 255, 0) 80%
   );
   z-index: 1;
 }
@@ -249,6 +257,9 @@ html[data-theme='dark'] #aurora-layer {
   z-index: 1;                /* above html bg, below body content */
   pointer-events: none;
   overflow: hidden;
+  /* Handle opacity transition on the layer to avoid filter+opacity black rect bug */
+  opacity: 0;                /* off in light mode */
+  will-change: opacity;
 }
 
 #global-orb {
@@ -259,18 +270,16 @@ html[data-theme='dark'] #aurora-layer {
   height: 550px;
   border-radius: 50%;
   background:
-    radial-gradient(circle at center, rgba(255, 210, 120, 0.95) 0%, transparent 45%),
-    radial-gradient(circle at center, rgba(250, 150, 60,  0.60) 0%, transparent 60%),
-    radial-gradient(circle at center, rgba(220, 100, 30,  0.30) 0%, transparent 75%);
+    radial-gradient(circle at center, rgba(255, 210, 120, 0.95) 0%, rgba(255, 210, 120, 0) 45%),
+    radial-gradient(circle at center, rgba(250, 150, 60,  0.60) 0%, rgba(250, 150, 60, 0) 60%),
+    radial-gradient(circle at center, rgba(220, 100, 30,  0.30) 0%, rgba(220, 100, 30, 0) 75%);
   filter: blur(45px);
-  opacity: 0;                /* off in light mode */
-  transition: opacity 0.8s ease;
   will-change: transform;
 }
 
 /* Lightbulb ON only in dark mode */
-:root[data-theme='dark'] ~ body #global-orb-layer #global-orb,
-html[data-theme='dark'] #global-orb {
+:root[data-theme='dark'] ~ body #global-orb-layer,
+html[data-theme='dark'] #global-orb-layer {
   opacity: var(--orb-intensity);
 }
 
@@ -360,24 +369,13 @@ samp {
    ================================================================ */
 .profile {
   min-height: auto;
-  padding: 10px 24px 30px;
-  margin-top: 0;
+  padding: 0px 24px 30px; /* Reduced top padding */
+  margin-top: -30px;      /* Shift module up */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 20px;
-}
-
-.hero-clock {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 2.8rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  color: var(--primary);
-  text-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  text-align: center;
-  line-height: 1;
 }
 
 .profile_inner {
@@ -395,13 +393,16 @@ samp {
   padding: 60px 40px;
   max-width: 800px;
   width: 100%;
-  transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  transform: translateZ(0); /* Fix Chrome backdrop-filter glitch */
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
 }
 
 .profile img {
   border-radius: 50%;
   border: 1px solid var(--glass-border);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
 .profile .profile_inner h1 {
@@ -446,6 +447,7 @@ samp {
   box-shadow: var(--glass-shadow);
   text-decoration: none;
   color: var(--primary);
+  transform: translateZ(0);
   transition:
     transform 0.25s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)),
     border-color 0.25s ease,
@@ -576,7 +578,8 @@ samp {
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
-  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  transform: translateZ(0); /* Prevent z-buffer clashing */
+  transition: transform 0.18s ease, border-color 0.18s ease;
 }
 
 .post-entry:hover {
@@ -697,7 +700,8 @@ samp {
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
-  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  transform: translateZ(0); /* Safety for GPU */
+  transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .project-card:hover {
@@ -770,7 +774,7 @@ samp {
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
-  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+  transition: transform 0.18s ease, border-color 0.18s ease;
 }
 
 .project-link:hover {
@@ -1074,35 +1078,31 @@ samp {
 }
 
 /* ================================================================
-   §20  PAGE TRANSITIONS — Apple-style non-linear easing
+   §20  PAGE TRANSITIONS — SPA Apple-Style Fly-in
    ────────────────────────────────────────────────────────
-   Uses intercepted navigation + CSS animations.
-   Apple's easing: cubic-bezier(0.32, 0.72, 0, 1) — fast start,
-   gentle deceleration with slight overshoot feel.
+   Simulates iOS home screen / app launch fly-in animation.
+   Using smooth scale expansion and fade-in for depth effect.
    ================================================================ */
 
-/* Apple-like easing tokens */
 :root {
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out-apple: cubic-bezier(0.32, 0.72, 0, 1);
-  --transition-duration: 0.4s;
+  --transition-duration: 0.35s;
 }
 
-/* ─── Page enter animation (applied on load) ─── */
-@keyframes page-enter {
+/* ─── Page enter animation (applied on initial hard load) ─── */
+@keyframes fly-in {
   from {
     opacity: 0;
-    transform: translateY(16px) scale(0.99);
+    transform: scale(0.95) translateY(12px);
     filter: blur(4px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: scale(1) translateY(0);
     filter: blur(0);
   }
 }
 
-/* ─── Header slide-down on enter ─── */
 @keyframes header-enter {
   from {
     opacity: 0;
@@ -1114,48 +1114,250 @@ samp {
   }
 }
 
-/* Page enter — animate .main content on every page load */
+/* ─── Main Content Base (Allows Transitions) ─── */
 .main {
-  animation: page-enter var(--transition-duration) var(--ease-out-expo) both;
+  /* Play initial load animation */
+  animation: fly-in 0.5s var(--ease-out-expo) forwards;
+  
+  /* Fallback transition for JS toggling when animation is disabled */
+  transition: opacity var(--transition-duration) var(--ease-out-expo),
+              transform var(--transition-duration) var(--ease-out-expo),
+              filter 0.3s ease;
 }
 
 .header {
-  animation: header-enter 0.35s var(--ease-out-expo) both;
+  animation: header-enter 0.35s var(--ease-out-expo) forwards;
 }
 
-/* ─── Exit state: added by JS before navigation ─── */
-.page-exit .main {
-  animation: none;
-  opacity: 0;
-  transform: translateY(-10px) scale(0.995);
-  transition:
-    opacity 0.18s var(--ease-in-out-apple),
-    transform 0.18s var(--ease-in-out-apple);
+/* ─── SPA Transition States ─── */
+
+/* 1. Exiting: Soft fade & slight zoom out (App closing effect) */
+.main.is-exiting {
+  animation: none !important; /* Override initial animation */
+  opacity: 0 !important;
+  transform: scale(0.97) translateY(0) !important;
+  filter: blur(1px) !important;
 }
 
-.page-exit .header {
-  animation: none;
-  opacity: 0;
-  transform: translateY(-8px);
-  transition:
-    opacity 0.14s var(--ease-in-out-apple),
-    transform 0.14s var(--ease-in-out-apple);
-}
-
-.page-exit .footer {
-  opacity: 0;
-  transition: opacity 0.14s var(--ease-in-out-apple);
+/* 2. Entering Preparation: Snap to zoomed-out & down (App launching origin) */
+.main.is-entering-prepare {
+  animation: none !important;
+  opacity: 0 !important;
+  transform: scale(0.95) translateY(12px) !important;
+  filter: blur(4px) !important;
+  transition: none !important; /* Snap instantly */
 }
 
 /* Respect reduced-motion preference */
 @media (prefers-reduced-motion: reduce) {
-  .main,
-  .header {
+  .main, .header {
     animation: none !important;
-  }
-  .page-exit .main,
-  .page-exit .header,
-  .page-exit .footer {
     transition: none !important;
   }
+  .main.is-exiting,
+  .main.is-entering-prepare {
+    transform: none !important;
+    filter: none !important;
+    opacity: 0 !important;
+  }
+}
+
+/* ================================================================
+   §16  THEME TOGGLE BUTTON (Uiverse.io Clone)
+   ================================================================ */
+
+.st-sunMoonThemeToggleBtn {
+  position: relative;
+  cursor: pointer;
+  color: var(--primary); /* match PaperMod theme color variable */
+  width: 32px; /* PaperMod usually has about 32px height buttons */
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  transition: background 0.3s ease;
+}
+
+.st-sunMoonThemeToggleBtn:hover {
+  background: rgba(120, 120, 120, 0.1);
+}
+
+.st-sunMoonThemeToggleBtn svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.4s ease;
+  transform: rotate(40deg); /* Dark mode default */
+}
+
+.st-sunMoonThemeToggleBtn svg .sunMoon {
+  transform-origin: center center;
+  transition: transform 0.4s ease;
+  transform: scale(1);
+}
+
+.st-sunMoonThemeToggleBtn svg .sunRay {
+  transform-origin: center center;
+  transform: scale(0);
+  transition: transform 0.4s ease;
+}
+
+.st-sunMoonThemeToggleBtn svg mask > circle {
+  transition: transform 0.64s cubic-bezier(0.41, 0.64, 0.32, 1.575);
+  transform: translate(0px, 0px);
+}
+
+/* Delay for the rays retracting (when switching back to Dark mode) */
+.st-sunMoonThemeToggleBtn svg .sunRay1 { transition-delay: 0.00s; }
+.st-sunMoonThemeToggleBtn svg .sunRay2 { transition-delay: 0.05s; }
+.st-sunMoonThemeToggleBtn svg .sunRay3 { transition-delay: 0.10s; }
+.st-sunMoonThemeToggleBtn svg .sunRay4 { transition-delay: 0.17s; }
+.st-sunMoonThemeToggleBtn svg .sunRay5 { transition-delay: 0.25s; }
+.st-sunMoonThemeToggleBtn svg .sunRay6 { transition-delay: 0.29s; }
+
+/* LIGHT MODE STATE */
+html[data-theme="light"] .st-sunMoonThemeToggleBtn svg,
+html:not([data-theme="dark"]) .st-sunMoonThemeToggleBtn svg {
+  transform: rotate(90deg);
+}
+
+html[data-theme="light"] .st-sunMoonThemeToggleBtn svg mask > circle,
+html:not([data-theme="dark"]) .st-sunMoonThemeToggleBtn svg mask > circle {
+  transform: translate(16px, -3px);
+}
+
+html[data-theme="light"] .st-sunMoonThemeToggleBtn svg .sunMoon,
+html:not([data-theme="dark"]) .st-sunMoonThemeToggleBtn svg .sunMoon {
+  transform: scale(0.55);
+}
+
+html[data-theme="light"] .st-sunMoonThemeToggleBtn svg .sunRay,
+html:not([data-theme="dark"]) .st-sunMoonThemeToggleBtn svg .sunRay {
+  transform: scale(1);
+}
+
+/* ================================================================
+   §17  EMAIL FLIP CARD
+   ================================================================ */
+
+/* Enforce equal spacing across all icon types */
+.social-icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.social-icons > a,
+.social-icons > .email-card-wrapper {
+  padding: 10px;
+}
+
+.email-card-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+  cursor: pointer;
+  z-index: 10;
+  -webkit-tap-highlight-color: transparent;
+  margin: 0;
+  opacity: 0.9;
+  transition: transform .18s ease, opacity .18s ease;
+}
+
+.email-card-wrapper:hover {
+  transform: translateY(-2px);
+  opacity: 1;
+}
+
+.email-card-wrapper.is-flipped {
+  z-index: 50; /* Base elevation for overlap */
+}
+
+.email-card-inner {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+}
+
+.email-card-wrapper.is-flipped .email-card-inner {
+  transform: rotateY(180deg) scale(1.15);
+}
+
+.email-card-front,
+.email-card-back {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.email-card-front {
+  width: max-content;
+  height: max-content;
+}
+
+.email-card-front a {
+  pointer-events: none;
+  transition: color 0.2s ease;
+  padding: 0;  /* Override .social-icons a padding */
+}
+
+.email-card-back {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotateY(180deg);
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  padding: 6px 12px;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  color: var(--primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.email-card-wrapper.is-flipped:hover .email-card-back {
+  background: var(--primary);
+  color: var(--theme);
+  transform: translate(-50%, -50%) rotateY(180deg) scale(1.03); /* Tactile hover on scale */
+}
+
+.copy-toast {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: var(--primary);
+  color: var(--theme);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0.2, 0.2, 1);
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 100;
+}
+
+.copy-toast.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }

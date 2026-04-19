@@ -186,13 +186,6 @@
 
     function applyGlass (v) {
         root.style.setProperty('--glass-opacity', v);
-        // Re-compute glass-bg for both light and dark
-        var isDark = root.dataset.theme === 'dark';
-        if (isDark) {
-            root.style.setProperty('--glass-bg', 'rgba(22, 22, 26, ' + v + ')');
-        } else {
-            root.style.setProperty('--glass-bg', 'rgba(255, 255, 255, ' + v + ')');
-        }
         if (glassVal) glassVal.textContent = parseFloat(v).toFixed(2);
     }
 
@@ -214,11 +207,6 @@
 
     function applyGlow (v) {
         root.style.setProperty('--orb-intensity', v);
-        if (orb) {
-            // Directly apply so it takes effect immediately
-            var isDark = root.dataset.theme === 'dark';
-            orb.style.opacity = isDark ? v : 0;
-        }
         if (glowVal) glowVal.textContent = parseFloat(v).toFixed(2);
     }
 
@@ -255,99 +243,153 @@
         });
     }
 
-    // ── §4 Theme Change Listener ───────────────────────────────
-    // When user toggles dark/light, re-apply glass & glow values
-    var observer = new MutationObserver(function () {
-        applyGlass(parseFloat(glassSlider ? glassSlider.value : 0.50));
-        applyGlow(parseFloat(glowSlider ? glowSlider.value : 0.90));
-    });
-    observer.observe(root, { attributes: true, attributeFilter: ['data-theme'] });
-
 })();
 </script>
 
 <script>
 /* ════════════════════════════════════════════════════════════════
-   §5  Page Transition Engine
+   §5  SPA Page Transition Engine (Pjax + iOS Fly-in)
    ──────────────────────────────────────────────────────────────
-   Intercepts internal link clicks → plays exit animation →
-   navigates after animation completes.
-   Enter animation is pure CSS (@keyframes page-enter) and
-   fires automatically on every page load.
-
-   FIXES (v2):
-   • Navigation lock prevents double-click / rapid-click queueing
-     multiple destinations (误切 fix)
-   • pointer-events: none during exit prevents stray clicks
-   • Reduced exit time 280→180ms for snappier feel
-   • Safety timeout prevents page from getting stuck
+   - Fetches the next page seamlessly via fetch()
+   - Keeps the background Orb and Galaxy layers running
+   - Apple iPhone home screen scale & fade App launch transition
+   - Script re-execution for components within .main
    ════════════════════════════════════════════════════════════════ */
 (function () {
     'use strict';
 
-    var EXIT_DURATION = 180;  // ms — keep short for snappy feel
-    var SAFETY_MARGIN = 60;   // extra ms before force-navigate
-    var navigating = false;   // lock — only one transition at a time
+    if (!window.fetch || !window.history || !window.DOMParser) return;
 
-    // Only intercept same-origin, non-anchor, non-special links
+    var EXIT_DURATION = 350;  // Matches CSS transition duration
+    var isAnimating = false;
+    var parser = new DOMParser();
+    var cache = {};
+    
+    if (window.history.replaceState && !window.history.state) {
+        window.history.replaceState({ url: window.location.href }, '', window.location.href);
+    }
+
+    // Only intercept same-origin, non-anchor, HTML links
     function shouldIntercept (anchor) {
         if (!anchor || !anchor.href) return false;
         if (anchor.target === '_blank') return false;
         if (anchor.hasAttribute('download')) return false;
         if (anchor.origin !== window.location.origin) return false;
-        // Skip hash-only links on the same page
-        if (anchor.pathname === window.location.pathname &&
-            anchor.hash) return false;
-        // Skip if link points to the current page (no-op)
-        if (anchor.pathname === window.location.pathname &&
-            !anchor.hash) return false;
+        if (anchor.pathname === window.location.pathname && anchor.hash) return false;
+        if (anchor.pathname === window.location.pathname && !anchor.hash) return false;
+        if (anchor.href.startsWith('javascript:')) return false;
         return true;
     }
 
+    async function navigateTo(url, isPopstate = false) {
+        if (isAnimating) return;
+        isAnimating = true;
+
+        var main = document.querySelector('.main');
+        var menu = document.querySelector('.menu');
+        
+        // 1. Play Exit Animation (App close effect)
+        main.classList.add('is-exiting');
+
+        // Fetch new content in parallel
+        var html = null;
+        try {
+            if (cache[url]) {
+                html = cache[url];
+            } else {
+                var response = await fetch(url);
+                if (!response.ok) throw new Error('Network error');
+                html = await response.text();
+                cache[url] = html; // Simple cache
+            }
+        } catch (err) {
+            // Fallback to hard reload on error
+            window.location.href = url;
+            return;
+        }
+
+        // Wait for CSS exit animation to finish
+        await new Promise(r => setTimeout(r, EXIT_DURATION));
+
+        // 2. Parse new DOM
+        var newDoc = parser.parseFromString(html, 'text/html');
+        var newMain = newDoc.querySelector('.main');
+        var newMenu = newDoc.querySelector('.menu');
+        var newTitle = newDoc.querySelector('title');
+
+        if (!newMain) {
+            window.location.href = url;
+            return;
+        }
+
+        // 3. Swap content
+        document.title = newTitle ? newTitle.innerText : document.title;
+        main.innerHTML = newMain.innerHTML;
+        
+        // Update body class for page specific styles (single vs list)
+        document.body.className = newDoc.body.className;
+        
+        // Update menu active states
+        if (newMenu && menu) {
+            menu.innerHTML = newMenu.innerHTML;
+        }
+        
+        // Update History if it's not a back/forward population
+        if (!isPopstate) {
+            window.history.pushState({ url: url }, '', url);
+        }
+
+        // Re-evaluate scripts in main (e.g. MathJax)
+        var scripts = main.querySelectorAll('script');
+        scripts.forEach(function(oldScript) {
+            var newScript = document.createElement('script');
+            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+
+        // Scroll top instantly
+        window.scrollTo({ top: 0, behavior: 'instant' });
+
+        // 4. Play Enter Animation (App launch effect)
+        main.classList.remove('is-exiting');
+        main.classList.add('is-entering-prepare');
+
+        // Force browser to recalculate styles so snap takes effect without transition
+        void main.offsetWidth;
+
+        // Remove prepare class to trigger slide-in transition
+        main.classList.remove('is-entering-prepare');
+        
+        // Release lock after animation finishes
+        setTimeout(function() {
+            isAnimating = false;
+        }, EXIT_DURATION);
+    }
+
+    // Intercept clicks on links
     document.addEventListener('click', function (e) {
-        // If a transition is already in progress, block ALL clicks
-        if (navigating) {
+        if (isAnimating) {
             e.preventDefault();
             e.stopPropagation();
             return;
         }
 
-        // Walk up from event target to find nearest <a>
         var anchor = e.target.closest('a');
         if (!anchor) return;
         if (!shouldIntercept(anchor)) return;
         if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
 
         e.preventDefault();
+        navigateTo(anchor.href, false);
+    }, true);
 
-        // Lock navigation — no more clicks accepted
-        navigating = true;
-        var href = anchor.href;
-
-        // Block pointer events on entire page to prevent mis-clicks
-        document.body.style.pointerEvents = 'none';
-
-        // Trigger exit animation
-        document.body.classList.add('page-exit');
-
-        // Navigate after exit animation
-        // Use a safety timeout that's slightly longer than CSS transition
-        setTimeout(function () {
-            window.location.href = href;
-        }, EXIT_DURATION + SAFETY_MARGIN);
-    }, true);  // Use capture phase to intercept before other handlers
-
-    // Handle browser back/forward + bfcache restore
-    window.addEventListener('pageshow', function (e) {
-        // Always clean up state — essential for bfcache restores
-        navigating = false;
-        document.body.classList.remove('page-exit');
-        document.body.style.pointerEvents = '';
+    // Intercept Back/Forward Buttons
+    window.addEventListener('popstate', function (e) {
+        var state = e.state || {};
+        var targetUrl = state.url || window.location.href;
+        navigateTo(targetUrl, true);
     });
 
-    // Extra safety: also clean up on regular page load
-    // (pageshow doesn't always fire in every browser configuration)
-    document.body.classList.remove('page-exit');
-    document.body.style.pointerEvents = '';
 })();
 </script>

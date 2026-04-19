@@ -1,0 +1,71 @@
+<div class="social-icons" {{ with .align}}align="{{.}}" {{- end }}>
+    {{- range site.Params.socialIcons }}
+    {{- $isEmail := hasPrefix .url "mailto:" }}
+    {{- if $isEmail }}
+    {{- $emailAddress := strings.TrimPrefix "mailto:" .url }}
+    <div class="email-card-wrapper" tabindex="0">
+        <div class="email-card-inner">
+            <div class="email-card-front">
+                <a href="javascript:void(0)" onclick="event.preventDefault();" title="{{ (.title | default .name) | title }}">
+                    {{ partial "svg.html" . }}
+                </a>
+            </div>
+            <div class="email-card-back" data-email="{{ $emailAddress }}">
+                <span>{{ $emailAddress }}</span>
+            </div>
+        </div>
+        <div class="copy-toast">复制成功!</div>
+    </div>
+    {{- else }}
+    <a href="{{ trim .url " " | safeURL }}" target="_blank" rel="noopener noreferrer me"
+        title="{{ (.title | default .name) | title }}">
+        {{ partial "svg.html" . }}
+    </a>
+    {{- end }}
+    {{- end }}
+</div>
+
+<script>
+    if (!window._emailFlipInit) {
+        window._emailFlipInit = true;
+        document.addEventListener('click', function (e) {
+            var card = e.target.closest('.email-card-wrapper');
+            
+            // If click outside, close ALL cards
+            if (!card) {
+                document.querySelectorAll('.email-card-wrapper.is-flipped').forEach(function(c) {
+                    c.classList.remove('is-flipped');
+                });
+                return;
+            }
+
+            // Inside click
+            if (!card.classList.contains('is-flipped')) {
+                // Close others, open this one
+                document.querySelectorAll('.email-card-wrapper.is-flipped').forEach(function(c) {
+                    if (c !== card) c.classList.remove('is-flipped');
+                });
+                card.classList.add('is-flipped');
+            } else {
+                // Already open -> Copy
+                var emailText = card.querySelector('.email-card-back').getAttribute('data-email');
+                if (emailText) {
+                    var toast = card.querySelector('.copy-toast');
+                    navigator.clipboard.writeText(emailText).then(function() {
+                        toast.classList.add('show');
+                        toast.textContent = "复制成功！";
+                        setTimeout(function() {
+                            toast.classList.remove('show');
+                        }, 2000);
+                    }).catch(function(err) {
+                        toast.classList.add('show');
+                        toast.textContent = "复制失败 / Failed";
+                        setTimeout(function() {
+                            toast.classList.remove('show');
+                        }, 2000);
+                    });
+                }
+            }
+        });
+    }
+</script>

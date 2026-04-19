@@ -1,21 +1,4 @@
 <div class="profile">
-    <div id="hero-clock" class="hero-clock" aria-hidden="true"></div>
-    <script>
-        (function() {
-            function updateClock() {
-                var now = new Date();
-                var h = String(now.getHours()).padStart(2, '0');
-                var m = String(now.getMinutes()).padStart(2, '0');
-                var s = String(now.getSeconds()).padStart(2, '0');
-                var clockEl = document.getElementById('hero-clock');
-                if (clockEl) {
-                    clockEl.textContent = h + ':' + m + ':' + s;
-                }
-            }
-            updateClock();
-            setInterval(updateClock, 1000);
-        })();
-    </script>
     {{- with site.Params.profileMode }}
     <div class="profile_inner">
         {{- if .imageUrl -}}

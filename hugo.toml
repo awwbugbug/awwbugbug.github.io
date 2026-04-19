@@ -72,6 +72,10 @@ copyright = "© 2026 ZDZ. All rights reserved."
     url = 'mailto:zdz1342979524@gmail.com'
 
   [[params.socialIcons]]
+    name = 'qq'
+    url = 'mailto:1342979524@qq.com'
+
+  [[params.socialIcons]]
     name = 'rss'
     url = '/index.xml'
 
