@@ -1,5 +1,6 @@
 baseURL = 'https://awwbugbug.github.io/'
 languageCode = 'zh-cn'
+defaultContentLanguage = 'zh-cn'
 title = 'ZDZ Blog'
 theme = 'PaperMod'
 copyright = "© 2026 ZDZ. All rights reserved."
@@ -52,15 +53,15 @@ copyright = "© 2026 ZDZ. All rights reserved."
     imageHeight = 160
 
     [[params.profileMode.buttons]]
-      name = "Projects"
+      name = "项目"
       url = "/projects/"
 
     [[params.profileMode.buttons]]
-      name = "Posts"
+      name = "文章"
       url = "/posts/"
 
     [[params.profileMode.buttons]]
-      name = "About"
+      name = "关于"
       url = "/about/"
 
   [[params.socialIcons]]
@@ -103,31 +104,31 @@ copyright = "© 2026 ZDZ. All rights reserved."
 
 [[menu.main]]
   identifier = 'projects'
-  name = 'Projects'
+  name = '项目'
   url = '/projects/'
   weight = 5
 
 [[menu.main]]
   identifier = 'about'
-  name = 'About'
+  name = '关于'
   url = '/about/'
   weight = 10
 
 [[menu.main]]
   identifier = 'posts'
-  name = 'Posts'
+  name = '文章'
   url = '/posts/'
   weight = 20
 
 [[menu.main]]
   identifier = 'archives'
-  name = 'Archives'
+  name = '归档'
   url = '/archives/'
   weight = 30
 
 [[menu.main]]
   identifier = 'search'
-  name = 'Search'
+  name = '搜索'
   url = '/search/'
   weight = 40
 

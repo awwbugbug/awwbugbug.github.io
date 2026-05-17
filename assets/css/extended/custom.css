@@ -49,8 +49,8 @@
   /* Layout */
   --main-width: 900px;
   --nav-width: 1100px;
-  --radius: 14px;
-  --radius-lg: 22px;
+  --radius: 16px;
+  --radius-lg: 20px;
   --code-bg: rgba(120, 120, 120, 0.1);
 
   /* ─── Glass Design System ─────────────────────────────────────
@@ -92,8 +92,8 @@ html {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  letter-spacing: 0.01em;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   background: transparent !important;    /* CRITICAL — let the orb show through */
   min-height: 100vh;
@@ -368,7 +368,7 @@ samp {
 }
 
 .menu a:active {
-  transform: scale(0.94);
+  transform: scale(0.96);
   transition: transform 0.1s ease !important;
 }
 
@@ -613,7 +613,7 @@ samp {
    §10  POST ENTRIES — Glass cards
    ================================================================ */
 .post-entry {
-  border-radius: 18px;
+  border-radius: 20px;
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
@@ -1072,6 +1072,49 @@ samp {
 }
 
 /* ================================================================
+   §18.5  iOS HAPTIC PRESS & GLASS REFINEMENTS
+   ================================================================ */
+
+.nav-card:active,
+.post-entry:active,
+.project-card:active,
+.button:active {
+  transform: scale(0.97) !important;
+  transition: transform 0.1s ease !important;
+}
+
+.profile .profile_inner h1 {
+  letter-spacing: -0.03em;
+}
+
+:root[data-theme='dark'] .profile_inner,
+:root[data-theme='dark'] .nav-card,
+:root[data-theme='dark'] .post-entry,
+:root[data-theme='dark'] .project-card,
+:root[data-theme='dark'] .toc,
+:root[data-theme='dark'] .notice {
+  box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+:root:not([data-theme='dark']) .profile_inner,
+:root:not([data-theme='dark']) .nav-card,
+:root:not([data-theme='dark']) .post-entry,
+:root:not([data-theme='dark']) .project-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 8px 32px rgba(0, 0, 0, 0.06);
+}
+
+.nav-card {
+  transition:
+    transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.post-entry:hover {
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.1);
+}
+
+/* ================================================================
    §19  RESPONSIVE
    ================================================================ */
 @media (max-width: 900px) {
@@ -1127,15 +1170,15 @@ samp {
 
 :root {
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-duration: 0.35s;
+  --transition-duration: 0.28s;
 }
 
 /* ─── Page enter animation (applied on initial hard load) ─── */
 @keyframes fly-in {
   from {
     opacity: 0;
-    transform: scale(0.95) translateY(12px);
-    filter: blur(4px);
+    transform: scale(0.96) translateY(10px);
+    filter: blur(3px);
   }
   to {
     opacity: 1;
@@ -1174,9 +1217,9 @@ samp {
 
 /* 1. Exiting: Soft fade & slight zoom out (App closing effect) */
 .main.is-exiting {
-  animation: none !important; /* Override initial animation */
+  animation: none !important;
   opacity: 0 !important;
-  transform: scale(0.97) translateY(0) !important;
+  transform: scale(0.98) translateY(0) !important;
   filter: blur(1px) !important;
 }
 
@@ -1184,8 +1227,8 @@ samp {
 .main.is-entering-prepare {
   animation: none !important;
   opacity: 0 !important;
-  transform: scale(0.95) translateY(12px) !important;
-  filter: blur(4px) !important;
+  transform: scale(0.96) translateY(10px) !important;
+  filter: blur(3px) !important;
   transition: none !important; /* Snap instantly */
 }
 

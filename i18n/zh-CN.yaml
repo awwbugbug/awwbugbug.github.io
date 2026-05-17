@@ -1,0 +1,54 @@
+- id: prev_page
+  translation: "上一页"
+- id: next_page
+  translation: "下一页"
+- id: prev_post
+  translation: "上一篇"
+- id: next_post
+  translation: "下一篇"
+- id: read_time
+  translation:
+    one: "约 1 分钟"
+    other: "约 {{ .Count }} 分钟"
+- id: words
+  translation:
+    one: "约 1 字"
+    other: "约 {{ .Count }} 字"
+- id: toc
+  translation: "目录"
+- id: search_placeholder
+  translation: "搜索"
+- id: search_not_found
+  translation: "未找到相关内容"
+- id: search_results_found
+  translation: "找到 {{ .Count }} 条结果"
+- id: share_on
+  translation: "分享到"
+- id: code_copy
+  translation: "复制"
+- id: code_copied
+  translation: "已复制"
+- id: no_content
+  translation: "暂无内容"
+- id: translations
+  translation: "翻译"
+- id: edit_post
+  translation: "编辑"
+- id: post_date
+  translation: "发布于"
+- id: more
+  translation: "更多"
+- id: list_archives
+  translation: "归档"
+- id: tags
+  translation: "标签"
+- id: categories
+  translation: "分类"
+- id: series
+  translation: "系列"
+- id: page
+  translation: "页面"
+- id: home
+  translation: "首页"
+- id: powered_by
+  translation: "由 {{ .Hugo }} 驱动 & 主题 {{ .Theme }}"
