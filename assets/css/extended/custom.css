@@ -352,6 +352,27 @@ samp {
   font-size: 1.9rem;
 }
 
+.logo-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-avatar-link {
+  display: flex;
+  border-radius: 50%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.logo-avatar-link img {
+  border-radius: 50%;
+}
+
+.logo-avatar-link:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 12px rgba(100, 149, 237, 0.4);
+}
+
 /* ─── Top Nav Interaction (Apple-style) ─── */
 .menu a {
   position: relative;

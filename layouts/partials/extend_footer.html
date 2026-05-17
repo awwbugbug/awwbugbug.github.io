@@ -279,6 +279,7 @@
         if (anchor.pathname === window.location.pathname && anchor.hash) return false;
         if (anchor.pathname === window.location.pathname && !anchor.hash) return false;
         if (anchor.href.startsWith('javascript:')) return false;
+        if (anchor.pathname.startsWith('/admin')) return false;
         return true;
     }
 
@@ -347,6 +348,18 @@
             Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
             newScript.appendChild(document.createTextNode(oldScript.innerHTML));
             oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+
+        // Load head scripts for special pages (e.g. search)
+        var newHeadScripts = newDoc.querySelectorAll('head script[src]');
+        newHeadScripts.forEach(function(s) {
+            var src = s.getAttribute('src');
+            if (!document.querySelector('head script[src="' + src + '"]')) {
+                var tag = document.createElement('script');
+                tag.src = src;
+                tag.defer = true;
+                document.head.appendChild(tag);
+            }
         });
 
         // Scroll top instantly
