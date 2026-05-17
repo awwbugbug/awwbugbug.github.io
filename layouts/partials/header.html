@@ -3,7 +3,7 @@
         <div class="logo">
             {{- $label_text := (site.Params.label.text | default site.Title) }}
             {{- if site.Title }}
-            <a href="{{ "" | absLangURL }}" accesskey="h" title="{{ $label_text }} (Alt + H)">
+            <div class="logo-group">
                 {{- if site.Params.label.icon }}
                 {{- $img := resources.Get site.Params.label.icon }}
                 {{- if $img }}
@@ -19,17 +19,23 @@
                             {{- $img = $img.Resize "x30" }}
                         {{- end }}
                     {{- end }}
-                    <img src="{{ $img.Permalink }}" alt="" aria-label="logo"
-                        height="{{- site.Params.label.iconHeight | default "30" -}}">
+                    <a href="/admin/" class="logo-avatar-link" title="管理后台">
+                        <img src="{{ $img.Permalink }}" alt="" aria-label="logo"
+                            height="{{- site.Params.label.iconHeight | default "30" -}}">
+                    </a>
                 {{- else }}
-                <img src="{{- site.Params.label.icon | absURL -}}" alt="" aria-label="logo"
-                    height="{{- site.Params.label.iconHeight | default "30" -}}">
+                    <a href="/admin/" class="logo-avatar-link" title="管理后台">
+                        <img src="{{- site.Params.label.icon | absURL -}}" alt="" aria-label="logo"
+                            height="{{- site.Params.label.iconHeight | default "30" -}}">
+                    </a>
                 {{- end -}}
                 {{- else if hasPrefix site.Params.label.iconSVG "<svg" }}
                     {{ site.Params.label.iconSVG | safeHTML }}
                 {{- end -}}
-                {{- $label_text -}}
-            </a>
+                <a href="{{ "" | absLangURL }}" accesskey="h" title="{{ $label_text }} (Alt + H)">
+                    {{- $label_text -}}
+                </a>
+            </div>
             {{- end }}
 
             {{- $lsenabled := (or (not site.Params.disableThemeToggle) (and (not site.Params.disableLangToggle) (hugo.IsMultilingual))) }}
