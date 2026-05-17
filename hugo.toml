@@ -79,22 +79,22 @@ copyright = "© 2026 ZDZ. All rights reserved."
     name = 'rss'
     url = '/index.xml'
 
-  [params.comments.giscus]
-    repo = "YOUR_GITHUB_USER/YOUR_REPO_NAME"
-    repoId = "YOUR_REPO_ID"
-    category = "Announcements"
-    categoryId = "YOUR_CATEGORY_ID"
-    mapping = "pathname"
-    strict = "0"
-    reactionsEnabled = "1"
-    emitMetadata = "0"
-    inputPosition = "bottom"
-    theme = "transparent_dark"
-    lang = "zh-CN"
+  # [params.comments.giscus]
+  #   repo = "awwbugbug/awwbugbug.github.io"
+  #   repoId = ""
+  #   category = "Announcements"
+  #   categoryId = ""
+  #   mapping = "pathname"
+  #   strict = "0"
+  #   reactionsEnabled = "1"
+  #   emitMetadata = "0"
+  #   inputPosition = "bottom"
+  #   theme = "transparent_dark"
+  #   lang = "zh-CN"
 
-  [params.analytics.umami]
-    website_id = "YOUR_UMAMI_WEBSITE_ID"
-    url = "https://YOUR_UMAMI_DOMAIN/script.js"
+  # [params.analytics.umami]
+  #   website_id = ""
+  #   url = ""
 
 [taxonomies]
   category = "categories"
