@@ -1,0 +1,125 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { site } from '../config';
+import { url } from '../lib/url';
+import papers from '../data/papers.json';
+
+type Links = { pdf?: string; arxiv?: string; code?: string; doi?: string };
+const linkLabels: [keyof Links, string][] = [['pdf', 'PDF'], ['arxiv', 'arXiv'], ['code', 'Code'], ['doi', 'DOI']];
+
+// Newest first, grouped by year
+const sorted = [...papers].sort((a, b) => b.year - a.year);
+const years = [...new Set(sorted.map((p) => p.year))];
+---
+<Base title="Papers" description={`Research publications by ${site.name}.`}>
+  <PageHeader eyebrow="Research" title="Papers." lead="Publications, preprints and the code behind them." />
+
+  <section class="page-body">
+    <div class="container papers">
+      {years.map((year) => (
+        <section class="year reveal">
+          <h2 class="year__label">{year}</h2>
+          <ol class="year__list">
+            {sorted.filter((p) => p.year === year).map((p, i) => {
+              const links = p.links as Links;
+              const id = `bib-${year}-${i}`;
+              return (
+                <li class="paper panel">
+                  <div class="paper__venue">
+                    <span class="badge">{p.venue}</span>
+                    {'status' in p && p.status && <span class="badge paper__status">{p.status}</span>}
+                  </div>
+                  <h3 class="paper__title">{p.title}</h3>
+                  <p class="paper__authors">
+                    {p.authors.map((a, j) => (
+                      <>
+                        {a === site.authorName ? <strong>{a}</strong> : a}
+                        {j < p.authors.length - 1 && ', '}
+                      </>
+                    ))}
+                  </p>
+
+                  <div class="paper__links">
+                    {linkLabels.map(([key, label]) => links[key] && (
+                      <a class="pill" href={url(links[key]!)} target="_blank" rel="noopener">{label}</a>
+                    ))}
+                    {p.bibtex && <button class="pill" type="button" data-copy={id}>Copy BibTeX</button>}
+                  </div>
+
+                  {p.bibtex && <pre class="visually-hidden" id={id}>{p.bibtex}</pre>}
+
+                  {p.abstract && (
+                    <details class="paper__abstract">
+                      <summary>Abstract</summary>
+                      <p>{p.abstract}</p>
+                    </details>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .papers { display: grid; gap: 56px; max-width: 880px; }
+
+  .year { display: grid; grid-template-columns: 96px 1fr; gap: 24px; }
+  .year__label {
+    position: sticky;
+    top: calc(var(--nav-h) + 24px);
+    align-self: start;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text-3);
+  }
+  .year__list { display: grid; gap: 16px; padding: 0; list-style: none; }
+
+  .paper { padding: 24px 26px; }
+  .paper__venue { display: flex; gap: 6px; }
+  .paper__status { --c: #30d158; }
+  .paper__title {
+    margin-top: 12px;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+  }
+  .paper__authors { margin-top: 6px; font-size: 15px; color: var(--text-2); }
+  .paper__authors strong { color: var(--text); font-weight: 600; }
+  .paper__links { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .paper__abstract { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 12px; }
+  .paper__abstract summary {
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--link);
+    list-style: none;
+  }
+  .paper__abstract summary::-webkit-details-marker { display: none; }
+  .paper__abstract summary::after { content: " ›"; display: inline-block; transition: transform 0.2s var(--ease); }
+  .paper__abstract[open] summary::after { transform: rotate(90deg); }
+  .paper__abstract p { margin-top: 10px; font-size: 15px; line-height: 1.6; color: var(--text-2); }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: pre;
+  }
+
+  @media (max-width: 767px) {
+    .year { grid-template-columns: 1fr; gap: 12px; }
+    .year__label { position: static; font-size: 24px; }
+    .paper { padding: 20px; }
+    .paper__title { font-size: 18px; }
+  }
+</style>

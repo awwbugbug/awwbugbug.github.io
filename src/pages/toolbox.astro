@@ -1,0 +1,87 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { site } from '../config';
+import tools from '../data/toolbox.json';
+
+const kinds = {
+  skill: { label: 'Skill', color: '#bf5af2' },
+  mcp: { label: 'MCP', color: '#0a84ff' },
+} as const;
+---
+<Base title="Toolbox" description={`Agent skills and MCP servers ${site.name} uses every day.`}>
+  <PageHeader eyebrow="Toolbox" title="Skills & MCP." lead="The agent skills and MCP servers I rely on — with one-line installs.">
+    <div class="segmented" data-filter-group="tools" role="group" aria-label="Filter">
+      <button type="button" data-filter="all" aria-pressed="true">All</button>
+      <button type="button" data-filter="skill" aria-pressed="false">Skills</button>
+      <button type="button" data-filter="mcp" aria-pressed="false">MCP</button>
+    </div>
+  </PageHeader>
+
+  <section class="page-body">
+    <ul class="container tools" data-filter-items="tools">
+      {tools.map((t, i) => {
+        const kind = kinds[t.kind as keyof typeof kinds] ?? kinds.mcp;
+        const id = `install-${i}`;
+        return (
+          <li class="tool panel reveal" data-kind={t.kind} style={`--c:${kind.color}`}>
+            <header class="tool__head">
+              <span class="tool__icon" aria-hidden="true">{t.name.charAt(0)}</span>
+              <div class="tool__name">
+                <h2>{t.link ? <a href={t.link} target="_blank" rel="noopener">{t.name}</a> : t.name}</h2>
+                <span class="badge">{kind.label}</span>
+              </div>
+            </header>
+            <p class="tool__desc">{t.description}</p>
+            {t.tags?.length > 0 && <ul class="tags">{t.tags.map((tag) => <li>{tag}</li>)}</ul>}
+            {t.install && (
+              <div class="code tool__install">
+                <code id={id}>{t.install}</code>
+                <button class="pill" type="button" data-copy={id}>Copy</button>
+              </div>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .tools {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    list-style: none;
+  }
+  .tool { display: flex; flex-direction: column; padding: 24px 26px; }
+
+  .tool__head { display: flex; align-items: center; gap: 14px; }
+  .tool__icon {
+    flex: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 22.5%;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--c) 80%, #fff), var(--c));
+    color: #fff;
+    font-size: 22px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--c) 30%, transparent);
+  }
+  .tool__name { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+  .tool__name h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+  .tool__name a:hover { color: var(--link); }
+
+  .tool__desc { margin-top: 14px; font-size: 16px; color: var(--text-2); }
+  .tool__install { margin-top: auto; }
+  .tool .tags + .tool__install,
+  .tool__desc + .tool__install { margin-top: 18px; }
+  .tool .tags { margin-bottom: 0; }
+
+  @media (max-width: 767px) {
+    .tools { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .tool { padding: 20px; }
+  }
+</style>

@@ -1,0 +1,124 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import data from '../data/vpn.json';
+---
+<Base title="VPN 推荐" description="我在用的网络加速服务与选择建议。" lang="zh-CN">
+  <PageHeader eyebrow="VPN" title="机场推荐。" lead={`我实际用过的几家服务，按体验排序。最后更新：${data.updated}。`} />
+
+  <section class="page-body">
+    <div class="container">
+      <!-- Affiliate disclosure. Keep this if any link below earns you a commission. -->
+      <aside class="notice panel reveal">
+        <span class="notice__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/></svg>
+        </span>
+        <p>部分链接为推广链接，通过它们购买我可能获得返利，不影响你的价格。机场服务随时可能变动，请先购买月付、确认稳定后再续费。</p>
+      </aside>
+
+      <ul class="plans">
+        {data.items.map((item) => (
+          <li class="plan panel reveal">
+            <header class="plan__head">
+              <h2 class="plan__name">{item.name}</h2>
+              {item.badge && <span class="badge">{item.badge}</span>}
+            </header>
+            <p class="plan__rating" aria-label={`评分 ${item.rating} / 5`}>
+              {Array.from({ length: 5 }, (_, i) => <span class={i < item.rating ? 'on' : ''}>★</span>)}
+            </p>
+            <p class="plan__price">{item.price}</p>
+
+            <dl class="plan__specs">
+              <div><dt>流量</dt><dd>{item.traffic}</dd></div>
+              <div><dt>地区</dt><dd>{item.regions.join(' · ')}</dd></div>
+              <div><dt>协议</dt><dd>{item.protocols.join(' · ')}</dd></div>
+            </dl>
+
+            <ul class="plan__points">
+              {item.pros.map((p) => <li class="pro">{p}</li>)}
+              {item.cons.map((c) => <li class="con">{c}</li>)}
+            </ul>
+
+            <a class="btn btn--primary plan__cta" href={item.link} target="_blank" rel="sponsored nofollow noopener">访问官网</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .notice__icon { flex: none; color: #ff9f0a; padding-top: 1px; }
+  .notice__icon svg { width: 20px; height: 20px; }
+
+  .plans {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    list-style: none;
+  }
+  .plan { display: flex; flex-direction: column; padding: 28px 26px 26px; }
+
+  .plan__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .plan__name { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+  .plan__head .badge { --c: #30d158; }
+  .plan__rating { margin-top: 6px; font-size: 14px; letter-spacing: 2px; color: var(--line); }
+  .plan__rating .on { color: #ff9f0a; }
+  .plan__price { margin-top: 14px; font-size: 28px; font-weight: 600; letter-spacing: -0.02em; }
+
+  .plan__specs {
+    margin: 18px 0 0;
+    border-radius: var(--radius-sm);
+    background: var(--bg-alt);
+    overflow: hidden;
+  }
+  .plan__specs div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 11px 14px;
+    font-size: 14px;
+  }
+  .plan__specs div + div { border-top: 1px solid var(--line); }
+  .plan__specs dt { flex: none; color: var(--text-2); }
+  .plan__specs dd { margin: 0; text-align: right; }
+
+  .plan__points { margin-top: 18px; display: grid; gap: 8px; font-size: 14px; list-style: none; }
+  .plan__points li { position: relative; padding-left: 22px; }
+  .plan__points li::before {
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .plan__points .pro::before { content: "✓"; background: #30d158; }
+  .plan__points .con::before { content: "–"; background: #ff9f0a; }
+
+  .plan__cta { margin-top: auto; justify-content: center; }
+  .plan__points { margin-bottom: 24px; }
+
+  @media (max-width: 1023px) {
+    .plans { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 767px) {
+    .plans { grid-template-columns: 1fr; gap: 16px; }
+    .plan { padding: 24px 22px 22px; }
+  }
+</style>

@@ -1,0 +1,60 @@
+[
+  {
+    "title": "Glass City",
+    "type": "image",
+    "tool": "Midjourney v7",
+    "date": "2026-09",
+    "image": "",
+    "prompt": "A city made of frosted glass at dawn, soft volumetric light, minimal, ultra detailed --ar 4:5",
+    "ratio": "4/5"
+  },
+  {
+    "title": "Ocean Breathing",
+    "type": "video",
+    "tool": "Sora",
+    "date": "2026-08",
+    "image": "",
+    "embed": "",
+    "video": "",
+    "prompt": "Slow aerial shot over a calm ocean that rises and falls like breathing",
+    "ratio": "16/9"
+  },
+  {
+    "title": "Portrait Study No. 3",
+    "type": "image",
+    "tool": "Stable Diffusion XL",
+    "date": "2026-07",
+    "image": "",
+    "prompt": "Studio portrait, rim light, film grain, 85mm",
+    "ratio": "1/1"
+  },
+  {
+    "title": "Neon Garden",
+    "type": "image",
+    "tool": "Flux",
+    "date": "2026-06",
+    "image": "",
+    "prompt": "Bioluminescent garden at night, macro, shallow depth of field",
+    "ratio": "3/4"
+  },
+  {
+    "title": "Paper Planes",
+    "type": "video",
+    "tool": "Runway Gen-4",
+    "date": "2026-05",
+    "image": "",
+    "embed": "",
+    "video": "",
+    "prompt": "Hundreds of paper planes gliding through a library, warm light",
+    "ratio": "16/9"
+  },
+  {
+    "title": "Desert Monolith",
+    "type": "image",
+    "tool": "Midjourney v7",
+    "date": "2026-04",
+    "image": "",
+    "prompt": "A black monolith in endless dunes, golden hour, cinematic --ar 3:2",
+    "ratio": "3/2"
+  }
+]

@@ -1,0 +1,225 @@
+---
+import Base from '../layouts/Base.astro';
+import Dock from '../components/Dock.astro';
+import SocialIcon from '../components/SocialIcon.astro';
+import { site } from '../config';
+import { url } from '../lib/url';
+import projects from '../data/projects.json';
+import aigc from '../data/aigc.json';
+import papers from '../data/papers.json';
+import toolbox from '../data/toolbox.json';
+import vpn from '../data/vpn.json';
+
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
+
+const sections = [
+  {
+    href: '/projects', title: 'Projects', color: '#1d1d1f',
+    desc: 'Open-source work and side projects on GitHub.',
+    count: plural(projects.length, 'repo'),
+    icon: '<path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>',
+  },
+  {
+    href: '/aigc', title: 'AIGC', color: '#bf5af2',
+    desc: 'Images and films made with generative AI.',
+    count: plural(aigc.length, 'piece'),
+    icon: '<path d="M12 3.5 13.9 9l5.6 1.9-5.6 1.9L12 18.5l-1.9-5.7-5.6-1.9L10.1 9z"/><path d="M18.5 3.5v3M17 5h3"/>',
+  },
+  {
+    href: '/papers', title: 'Papers', color: '#ff9f0a',
+    desc: 'Research publications and preprints.',
+    count: plural(papers.length, 'paper'),
+    icon: '<path d="M7 3.5h7l4.5 4.5v12.5H7z"/><path d="M14 3.5V8h4.5M9.5 12.5h6M9.5 16h6"/>',
+  },
+  {
+    href: '/toolbox', title: 'Toolbox', color: '#0a84ff',
+    desc: 'The skills and MCP servers I use every day.',
+    count: plural(toolbox.length, 'tool'),
+    icon: '<path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.4 2.4-2.6-.4-.4-2.6z"/>',
+  },
+  {
+    href: '/vpn', title: 'VPN', color: '#30d158',
+    desc: '我在用的网络加速服务与选择建议。',
+    count: plural(vpn.items.length, 'pick'),
+    icon: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.6 3.5 5.4 3.5 8.5s-1.1 5.9-3.5 8.5c-2.4-2.6-3.5-5.4-3.5-8.5s1.1-5.9 3.5-8.5z"/>',
+  },
+];
+---
+<Base>
+  <!-- ============ Hero ============ -->
+  <section class="hero">
+    <div class="hero__wallpaper" aria-hidden="true">
+      <span class="orb orb--1"></span>
+      <span class="orb orb--2"></span>
+      <span class="orb orb--3"></span>
+    </div>
+
+    <div class="container hero__grid">
+      <div class="hero__copy reveal">
+        <p class="eyebrow">{site.role}</p>
+        <h1 class="hero__title">
+          Hi, I'm {site.name}.<br>
+          <span class="gradient-text">{site.tagline}</span>
+        </h1>
+        <p class="hero__lead">{site.intro}</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href={url('/projects')}>View my work</a>
+          <a class="btn btn--link" href="#connect">Get in touch <span aria-hidden="true">›</span></a>
+        </div>
+      </div>
+
+      <!-- Contact card, inspired by the iOS Contacts card -->
+      <aside class="contact-card glass reveal" aria-label="Profile">
+        <div class="avatar" aria-hidden="true">{site.initials}</div>
+        <!-- To use a photo: put it in public/avatar.jpg and replace the line above with
+             <img class="avatar" src={url('/avatar.jpg')} alt=""> -->
+        <h2 class="contact-card__name">{site.name}</h2>
+        <p class="contact-card__role">{site.role}</p>
+        <ul class="contact-card__meta">
+          {site.openToWork && <li><span class="status-dot"></span>Available for new projects</li>}
+          <li>Based in {site.location}</li>
+        </ul>
+        <div class="contact-card__actions">
+          <a href={`mailto:${site.email}`} aria-label="Email">
+            <SocialIcon name="mail" /><span>mail</span>
+          </a>
+          <a href={`https://github.com/${site.githubUser}`} target="_blank" rel="noopener" aria-label="GitHub">
+            <SocialIcon name="github" /><span>github</span>
+          </a>
+          <a href={url('/papers')} aria-label="Papers">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h7l4.5 4.5v12.5H7z"/><path d="M14 3.5V8h4.5"/></svg>
+            <span>papers</span>
+          </a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ Explore ============ -->
+  <section class="section section--alt">
+    <div class="container">
+      <header class="section__head reveal">
+        <h2 class="section__title">Explore.</h2>
+        <p class="section__lead">Everything I make, in one place.</p>
+      </header>
+
+      <div class="explore">
+        {sections.map((s) => (
+          <a class="explore__card reveal" href={url(s.href)} style={`--c:${s.color}`}>
+            <span class="explore__icon"><svg viewBox="0 0 24 24" aria-hidden="true" set:html={s.icon} /></span>
+            <span class="explore__count">{s.count}</span>
+            <h3 class="explore__title">{s.title}</h3>
+            <p class="explore__desc">{s.desc}</p>
+            <span class="explore__more">Open <span aria-hidden="true">›</span></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Connect ============ -->
+  <section class="section connect" id="connect">
+    <div class="container">
+      <header class="section__head section__head--center reveal">
+        <h2 class="section__title">Let's connect.</h2>
+        <p class="section__lead">Find me around the internet, or just say hello.</p>
+      </header>
+      <Dock />
+      <p class="connect__email reveal">
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .explore {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .explore__card {
+    grid-column: span 2;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 260px;
+    padding: 28px;
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    transition: transform 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out);
+  }
+  .explore__card:nth-child(-n + 2) { grid-column: span 3; min-height: 300px; }
+  .explore__card:hover { transform: translateY(-6px); box-shadow: var(--shadow-card-hover); }
+
+  /* Soft color wash in the corner, tinted per section */
+  .explore__card::after {
+    content: "";
+    position: absolute;
+    right: -80px;
+    bottom: -120px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: var(--c);
+    opacity: 0.12;
+    filter: blur(50px);
+    pointer-events: none;
+  }
+
+  .explore__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 22.5%;
+    display: grid;
+    place-items: center;
+    background: var(--c);
+    color: #fff;
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--c) 35%, transparent);
+  }
+  .explore__icon svg { width: 28px; height: 28px; stroke-width: 1.8; }
+
+  .explore__count {
+    position: absolute;
+    top: 32px;
+    right: 28px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-3);
+  }
+  .explore__title {
+    margin-top: auto;
+    padding-top: 40px;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+  .explore__desc { margin-top: 6px; font-size: 16px; color: var(--text-2); }
+  .explore__more { margin-top: 14px; font-size: 15px; color: var(--link); }
+  .explore__card:hover .explore__more { text-decoration: underline; }
+
+  :global(.js) .explore__card.reveal.is-visible {
+    transition: opacity 1s var(--ease-out), transform 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out);
+  }
+  :global(.js) .explore__card.reveal.is-visible:hover { transform: translateY(-6px); }
+
+  @media (prefers-color-scheme: dark) {
+    .explore__card:first-child { --c: #48484a; }
+  }
+
+  @media (max-width: 1023px) {
+    .explore { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .explore__card,
+    .explore__card:nth-child(-n + 2) { grid-column: span 1; min-height: 240px; }
+    .explore__card:last-child { grid-column: 1 / -1; }
+  }
+  @media (max-width: 767px) {
+    .explore { grid-template-columns: 1fr; gap: 16px; }
+    .explore__card,
+    .explore__card:nth-child(-n + 2),
+    .explore__card:last-child { grid-column: auto; min-height: 0; padding: 24px; }
+    .explore__title { padding-top: 28px; font-size: 26px; }
+  }
+</style>

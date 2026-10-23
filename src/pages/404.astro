@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/url';
+---
+<Base title="Page not found">
+  <section class="notfound">
+    <div>
+      <h1 class="section__title">This page can't be found.</h1>
+      <p>It may have moved, or the link might be broken.</p>
+      <a class="btn btn--primary" href={url('/')}>Back to home</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .notfound {
+    min-height: calc(100vh - 120px);
+    display: grid;
+    place-items: center;
+    padding: calc(var(--nav-h) + 40px) 16px 40px;
+    text-align: center;
+  }
+  .notfound p { margin-top: 12px; font-size: 19px; color: var(--text-2); }
+  .notfound .btn { margin-top: 32px; }
+</style>

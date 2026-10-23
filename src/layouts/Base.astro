@@ -1,0 +1,70 @@
+---
+import '../styles/global.css';
+import { site, nav } from '../config';
+import { url } from '../lib/url';
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: string;
+}
+
+const {
+  title,
+  description = `${site.name} — ${site.role}. ${site.tagline}`,
+  lang = 'en',
+} = Astro.props;
+
+const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.role}`;
+const current = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => current === url(href).replace(/\/$/, '');
+---
+<!doctype html>
+<html lang={lang}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{pageTitle}</title>
+  <meta name="description" content={description}>
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content={pageTitle}>
+  <meta property="og:description" content={description}>
+  <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml">
+  <script is:inline>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="nav__brand" href={url('/')}>{site.name}</a>
+      <button class="nav__toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
+        <span></span><span></span>
+      </button>
+      <nav class="nav__links" id="nav-links" aria-label="Primary">
+        {nav.map((item) => (
+          <a href={url(item.href)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
+        ))}
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>Copyright © {new Date().getFullYear()} {site.name}. All rights reserved.</p>
+      <nav class="footer__links" aria-label="Footer">
+        {nav.map((item) => <a href={url(item.href)}>{item.label}</a>)}
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    import '../scripts/main';
+  </script>
+</body>
+</html>

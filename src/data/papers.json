@@ -1,0 +1,35 @@
+[
+  {
+    "title": "Title of Your Most Recent Paper: A Descriptive Subtitle",
+    "authors": ["Your Name", "Coauthor One", "Coauthor Two"],
+    "venue": "NeurIPS",
+    "year": 2026,
+    "status": "Accepted",
+    "abstract": "One or two paragraphs of abstract. Readers can expand this to see what the paper is about without leaving the page.",
+    "links": {
+      "pdf": "",
+      "arxiv": "https://arxiv.org/abs/0000.00000",
+      "code": "https://github.com/your-username/paper-code",
+      "doi": ""
+    },
+    "bibtex": "@inproceedings{yourname2026title,\n  title     = {Title of Your Most Recent Paper},\n  author    = {Name, Your and One, Coauthor and Two, Coauthor},\n  booktitle = {NeurIPS},\n  year      = {2026}\n}"
+  },
+  {
+    "title": "Another Paper Title Goes Here",
+    "authors": ["Coauthor One", "Your Name"],
+    "venue": "CVPR",
+    "year": 2025,
+    "abstract": "Short abstract for the second paper.",
+    "links": { "arxiv": "https://arxiv.org/abs/0000.00000" },
+    "bibtex": ""
+  },
+  {
+    "title": "A Workshop Paper or Preprint",
+    "authors": ["Your Name"],
+    "venue": "arXiv preprint",
+    "year": 2024,
+    "abstract": "",
+    "links": { "pdf": "/papers/example.pdf" },
+    "bibtex": ""
+  }
+]

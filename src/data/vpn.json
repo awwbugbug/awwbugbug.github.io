@@ -1,0 +1,41 @@
+{
+  "updated": "2026-10",
+  "items": [
+    {
+      "name": "机场 A",
+      "badge": "综合推荐",
+      "price": "¥15 / 月起",
+      "traffic": "200 GB / 月",
+      "regions": ["香港", "日本", "新加坡", "美国"],
+      "protocols": ["Hysteria2", "VLESS"],
+      "pros": ["晚高峰稳定", "支持流媒体解锁"],
+      "cons": ["价格偏高"],
+      "link": "https://example.com",
+      "rating": 5
+    },
+    {
+      "name": "机场 B",
+      "badge": "性价比",
+      "price": "¥8 / 月起",
+      "traffic": "100 GB / 月",
+      "regions": ["香港", "台湾", "日本"],
+      "protocols": ["Trojan", "Shadowsocks"],
+      "pros": ["便宜", "节点多"],
+      "cons": ["偶尔不稳定"],
+      "link": "https://example.com",
+      "rating": 4
+    },
+    {
+      "name": "机场 C",
+      "badge": "",
+      "price": "¥25 / 月起",
+      "traffic": "不限量",
+      "regions": ["香港", "美国", "英国", "德国"],
+      "protocols": ["VLESS Reality"],
+      "pros": ["专线", "延迟低"],
+      "cons": ["需要较新的客户端"],
+      "link": "https://example.com",
+      "rating": 4
+    }
+  ]
+}

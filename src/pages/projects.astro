@@ -1,0 +1,169 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import SocialIcon from '../components/SocialIcon.astro';
+import { site } from '../config';
+import projects from '../data/projects.json';
+
+interface Repo {
+  description: string | null;
+  stargazers_count: number;
+  forks_count: number;
+  language: string | null;
+  homepage: string | null;
+  pushed_at: string;
+  html_url: string;
+}
+
+// Pull live stats from the GitHub API at build time. If a repo doesn't
+// exist yet or the API is unreachable, the card falls back to projects.json.
+async function fetchRepo(repo: string): Promise<Repo | null> {
+  const headers: Record<string, string> = {
+    Accept: 'application/vnd.github+json',
+    'User-Agent': 'personal-site-build',
+  };
+  if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+  try {
+    const res = await fetch(`https://api.github.com/repos/${repo}`, { headers, signal: AbortSignal.timeout(8000) });
+    return res.ok ? ((await res.json()) as Repo) : null;
+  } catch {
+    return null;
+  }
+}
+
+const languageColors: Record<string, string> = {
+  TypeScript: '#3178c6', JavaScript: '#f1e05a', Python: '#3572a5', Swift: '#f05138',
+  Rust: '#dea584', Go: '#00add8', Java: '#b07219', Kotlin: '#a97bff', 'C++': '#f34b7d',
+  C: '#555555', Ruby: '#701516', Vue: '#41b883', HTML: '#e34c26', CSS: '#663399',
+  Shell: '#89e051', 'Jupyter Notebook': '#da5b0b', Dart: '#00b4ab',
+};
+
+const items = await Promise.all(projects.map(async (p) => {
+  const gh = await fetchRepo(p.repo);
+  const language = gh?.language ?? p.tags?.[0] ?? null;
+  return {
+    ...p,
+    description: p.description || gh?.description || '',
+    url: gh?.html_url ?? `https://github.com/${p.repo}`,
+    homepage: p.homepage || gh?.homepage || '',
+    stars: gh?.stargazers_count,
+    forks: gh?.forks_count,
+    language,
+    languageColor: language ? languageColors[language] ?? '#8e8e93' : null,
+    updated: gh?.pushed_at
+      ? new Date(gh.pushed_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+      : null,
+  };
+}));
+---
+<Base title="Projects" description={`Open-source work and side projects by ${site.name}.`}>
+  <PageHeader eyebrow="GitHub" title="Projects." lead="Open-source work, tools and side projects I've built.">
+    <a class="pill pill--accent page-header__cta" href={`https://github.com/${site.githubUser}`} target="_blank" rel="noopener">
+      <SocialIcon name="github" /> View all on GitHub
+    </a>
+  </PageHeader>
+
+  <section class="page-body">
+    <div class="container repo-grid">
+      {items.map((p) => (
+        <article class={`repo panel reveal ${p.featured ? 'repo--featured' : ''}`}>
+          <header class="repo__head">
+            <span class="repo__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M6 4.5h10.5a1.5 1.5 0 0 1 1.5 1.5v13.5H7.5A1.5 1.5 0 0 1 6 18z"/><path d="M6 16.5h12"/></svg>
+            </span>
+            <div>
+              <h2 class="repo__title"><a href={p.url} target="_blank" rel="noopener">{p.title}</a></h2>
+              <p class="repo__path">{p.repo}</p>
+            </div>
+            {p.featured && <span class="badge repo__badge">Featured</span>}
+          </header>
+
+          <p class="repo__desc">{p.description}</p>
+
+          {p.tags?.length > 0 && <ul class="tags">{p.tags.map((t) => <li>{t}</li>)}</ul>}
+
+          <footer class="repo__foot">
+            <ul class="repo__stats">
+              {p.language && <li><span class="lang-dot" style={`background:${p.languageColor}`}></span>{p.language}</li>}
+              {p.stars !== undefined && (
+                <li title="Stars">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/></svg>
+                  {p.stars}
+                </li>
+              )}
+              {p.forks !== undefined && (
+                <li title="Forks">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6.5" cy="5.5" r="2"/><circle cx="17.5" cy="5.5" r="2"/><circle cx="12" cy="18.5" r="2"/><path d="M6.5 7.5v1a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3v-1M12 11.5v5"/></svg>
+                  {p.forks}
+                </li>
+              )}
+              {p.updated && <li>Updated {p.updated}</li>}
+            </ul>
+            <div class="repo__links">
+              {p.homepage && <a class="pill" href={p.homepage} target="_blank" rel="noopener">Live demo</a>}
+              <a class="pill" href={p.url} target="_blank" rel="noopener">Repository ›</a>
+            </div>
+          </footer>
+        </article>
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-header__cta { margin-top: 28px; }
+
+  .repo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .repo {
+    display: flex;
+    flex-direction: column;
+    padding: 26px 28px;
+    transition: box-shadow 0.4s var(--ease-out);
+  }
+  .repo:hover { box-shadow: var(--shadow-card-hover); }
+  .repo--featured { grid-column: 1 / -1; }
+
+  .repo__head { display: flex; align-items: center; gap: 14px; }
+  .repo__icon {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: var(--bg-alt);
+    color: var(--text-2);
+  }
+  .repo__icon svg { width: 22px; height: 22px; }
+  .repo__title { font-size: 21px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+  .repo__title a:hover { color: var(--link); }
+  .repo__path { font-size: 13px; color: var(--text-3); }
+  .repo__badge { margin-left: auto; --c: #ff9f0a; }
+
+  .repo__desc { margin-top: 16px; font-size: 16px; color: var(--text-2); }
+  .repo--featured .repo__desc { font-size: 18px; max-width: 60ch; }
+
+  .repo__foot {
+    margin-top: auto;
+    padding-top: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .repo__stats { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--text-2); }
+  .repo__stats li { display: inline-flex; align-items: center; gap: 5px; }
+  .repo__stats svg { width: 15px; height: 15px; }
+  .lang-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .repo__links { display: flex; gap: 8px; }
+
+  @media (max-width: 767px) {
+    .repo-grid { grid-template-columns: 1fr; gap: 16px; }
+    .repo { padding: 22px; }
+  }
+</style>

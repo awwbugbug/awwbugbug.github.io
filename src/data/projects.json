@@ -1,0 +1,28 @@
+[
+  {
+    "repo": "your-username/project-one",
+    "title": "Project One",
+    "description": "A short sentence about what this project is and the problem it solves.",
+    "tags": ["TypeScript", "React"],
+    "homepage": "",
+    "featured": true
+  },
+  {
+    "repo": "your-username/project-two",
+    "title": "Project Two",
+    "description": "A mobile app that does one thing really well.",
+    "tags": ["Swift", "SwiftUI"]
+  },
+  {
+    "repo": "your-username/project-three",
+    "title": "Project Three",
+    "description": "A developer tool or library you're proud of.",
+    "tags": ["Rust", "CLI"]
+  },
+  {
+    "repo": "your-username/project-four",
+    "title": "Project Four",
+    "description": "An experiment, a side project, or a fork you maintain.",
+    "tags": ["Python"]
+  }
+]

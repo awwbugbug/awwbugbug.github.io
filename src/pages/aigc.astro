@@ -1,0 +1,142 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { site } from '../config';
+import { url } from '../lib/url';
+import works from '../data/aigc.json';
+
+// Images/videos live in public/aigc/. Use paths like "/aigc/glass-city.webp".
+const items = works.map((w, i) => ({
+  ...w,
+  src: w.image ? url(w.image) : '',
+  videoSrc: 'video' in w && w.video ? url(w.video) : '',
+  embedSrc: 'embed' in w ? w.embed : '',
+  placeholder: `ph-${(i % 6) + 1}`,
+  meta: [w.tool, w.date].filter(Boolean).join(' · '),
+}));
+---
+<Base title="AIGC" description={`Images and films made with generative AI by ${site.name}.`}>
+  <PageHeader eyebrow="AIGC" title="Made with AI." lead="Images and short films I've created with generative models — prompts included.">
+    <div class="segmented" data-filter-group="aigc" role="group" aria-label="Filter">
+      <button type="button" data-filter="all" aria-pressed="true">All</button>
+      <button type="button" data-filter="image" aria-pressed="false">Images</button>
+      <button type="button" data-filter="video" aria-pressed="false">Videos</button>
+    </div>
+  </PageHeader>
+
+  <section class="page-body">
+    <div class="container">
+      <ul class="gallery" data-filter-items="aigc">
+        {items.map((w) => (
+          <li class="gallery__item reveal" data-kind={w.type}>
+            <button
+              type="button"
+              class="gallery__btn"
+              data-lightbox
+              data-title={w.title}
+              data-meta={w.meta}
+              data-prompt={w.prompt}
+              data-image={w.src || undefined}
+              data-video={w.videoSrc || undefined}
+              data-embed={w.embedSrc || undefined}
+              data-placeholder={w.placeholder}
+            >
+              <span class="gallery__media" style={`aspect-ratio:${w.ratio || '4/5'}`}>
+                {w.src
+                  ? <img src={w.src} alt={w.title} loading="lazy" decoding="async" />
+                  : <span class={`gallery__ph ${w.placeholder}`}></span>}
+                {w.type === 'video' && (
+                  <span class="gallery__play" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" class="fill"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+                  </span>
+                )}
+              </span>
+              <span class="gallery__caption">
+                <span class="gallery__title">{w.title}</span>
+                <span class="gallery__meta">{w.meta}</span>
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <dialog class="lightbox" id="lightbox" aria-label="Preview">
+    <button class="lightbox__close" type="button" aria-label="Close">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+    <div class="lightbox__media"></div>
+    <div class="lightbox__info">
+      <h2 class="lightbox__title"></h2>
+      <p class="lightbox__meta"></p>
+      <div class="lightbox__prompt code">
+        <code id="lightbox-prompt"></code>
+        <button class="pill" type="button" data-copy="lightbox-prompt">Copy prompt</button>
+      </div>
+    </div>
+  </dialog>
+</Base>
+
+<style>
+  /* Masonry via CSS columns: keeps each piece at its natural aspect ratio */
+  .gallery { columns: 3 300px; column-gap: 20px; }
+  .gallery__item { break-inside: avoid; margin-bottom: 20px; }
+
+  .gallery__btn {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: zoom-in;
+  }
+  .gallery__media {
+    position: relative;
+    display: block;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--bg-alt);
+    box-shadow: var(--shadow-card);
+  }
+  .gallery__media img,
+  .gallery__ph {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s var(--ease-out);
+  }
+  .gallery__btn:hover .gallery__media img,
+  .gallery__btn:hover .gallery__ph { transform: scale(1.04); }
+
+  .gallery__play {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.28);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    color: #fff;
+  }
+  .gallery__play svg { width: 22px; height: 22px; margin-left: 3px; }
+
+  .gallery__caption { display: grid; gap: 2px; padding: 12px 4px 0; }
+  .gallery__title { font-size: 16px; font-weight: 600; letter-spacing: -0.015em; }
+  .gallery__meta { font-size: 13px; color: var(--text-2); }
+
+  @media (max-width: 767px) {
+    .gallery { columns: 2 150px; column-gap: 12px; }
+    .gallery__item { margin-bottom: 14px; }
+    .gallery__title { font-size: 14px; }
+    .gallery__meta { font-size: 12px; }
+  }
+</style>
