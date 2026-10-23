@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Dock from '../components/Dock.astro';
 import SocialIcon from '../components/SocialIcon.astro';
-import { site } from '../config';
+import { site, emails } from '../config';
 import { url } from '../lib/url';
 import projects from '../data/projects.json';
 import aigc from '../data/aigc.json';
@@ -46,52 +46,25 @@ const sections = [
 ];
 ---
 <Base>
-  <!-- ============ Hero ============ -->
-  <section class="hero">
+  <!-- ============ Profile ============ -->
+  <section class="hero profile">
     <div class="hero__wallpaper" aria-hidden="true">
       <span class="orb orb--1"></span>
       <span class="orb orb--2"></span>
       <span class="orb orb--3"></span>
     </div>
 
-    <div class="container hero__grid">
-      <div class="hero__copy reveal">
-        <p class="eyebrow">{site.role}</p>
-        <h1 class="hero__title">
-          Hi, I'm {site.name}.<br>
-          <span class="gradient-text">{site.tagline}</span>
-        </h1>
-        <p class="hero__lead">{site.intro}</p>
-        <div class="hero__actions">
-          <a class="btn btn--primary" href={url('/projects')}>View my work</a>
-          <a class="btn btn--link" href="#connect">Get in touch <span aria-hidden="true">›</span></a>
-        </div>
+    <div class="container profile__inner reveal">
+      <!-- Avatar lives at public/avatar.webp -->
+      <img class="profile__avatar" src={url('/avatar.webp')} alt={site.name} width="176" height="176">
+      <h1 class="profile__name">{site.name}</h1>
+      <a class="profile__handle" href={`https://github.com/${site.githubUser}`} target="_blank" rel="noopener">
+        <SocialIcon name="github" />@{site.githubUser}
+      </a>
+      <div class="profile__actions">
+        <a class="btn btn--primary" href={url('/projects')}>View my work</a>
+        <a class="btn btn--link" href="#connect">Contact <span aria-hidden="true">›</span></a>
       </div>
-
-      <!-- Contact card, inspired by the iOS Contacts card -->
-      <aside class="contact-card glass reveal" aria-label="Profile">
-        <div class="avatar" aria-hidden="true">{site.initials}</div>
-        <!-- To use a photo: put it in public/avatar.jpg and replace the line above with
-             <img class="avatar" src={url('/avatar.jpg')} alt=""> -->
-        <h2 class="contact-card__name">{site.name}</h2>
-        <p class="contact-card__role">{site.role}</p>
-        <ul class="contact-card__meta">
-          {site.openToWork && <li><span class="status-dot"></span>Available for new projects</li>}
-          <li>Based in {site.location}</li>
-        </ul>
-        <div class="contact-card__actions">
-          <a href={`mailto:${site.email}`} aria-label="Email">
-            <SocialIcon name="mail" /><span>mail</span>
-          </a>
-          <a href={`https://github.com/${site.githubUser}`} target="_blank" rel="noopener" aria-label="GitHub">
-            <SocialIcon name="github" /><span>github</span>
-          </a>
-          <a href={url('/papers')} aria-label="Papers">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h7l4.5 4.5v12.5H7z"/><path d="M14 3.5V8h4.5"/></svg>
-            <span>papers</span>
-          </a>
-        </div>
-      </aside>
     </div>
   </section>
 
@@ -122,17 +95,130 @@ const sections = [
     <div class="container">
       <header class="section__head section__head--center reveal">
         <h2 class="section__title">Let's connect.</h2>
-        <p class="section__lead">Find me around the internet, or just say hello.</p>
+        <p class="section__lead">Find me on GitHub, or drop me an email.</p>
       </header>
       <Dock />
-      <p class="connect__email reveal">
-        <a href={`mailto:${site.email}`}>{site.email}</a>
-      </p>
+
+      <!-- Email list, styled like an iOS inset grouped table -->
+      <ul class="mail-list panel reveal">
+        {emails.map((m, i) => (
+          <li class="mail-row">
+            <span class="mail-row__icon" aria-hidden="true"><SocialIcon name="mail" /></span>
+            <span class="mail-row__text">
+              <a id={`email-${i}`} href={`mailto:${m.address}`}>{m.address}</a>
+              <span class="mail-row__label">{m.label}</span>
+            </span>
+            <button class="pill" type="button" data-copy={`email-${i}`}>Copy</button>
+          </li>
+        ))}
+      </ul>
     </div>
   </section>
 </Base>
 
 <style>
+  /* ---------- Profile hero ---------- */
+  .profile {
+    min-height: min(860px, 92vh);
+    display: grid;
+    align-items: center;
+  }
+  .profile__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .profile__avatar {
+    width: 176px;
+    height: 176px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #000;
+    box-shadow:
+      0 0 0 1px var(--line),
+      0 0 0 7px color-mix(in srgb, var(--bg) 70%, transparent),
+      0 24px 60px rgba(0, 0, 0, 0.28);
+  }
+  /* Center the wallpaper orbs behind the avatar */
+  .profile .orb--1 { left: calc(50% - 480px); right: auto; top: -80px; }
+  .profile .orb--2 { left: calc(50% - 140px); right: auto; top: 220px; }
+  .profile .orb--3 { left: calc(50% + 120px); right: auto; top: 20px; }
+  .profile__name {
+    margin-top: 28px;
+    font-size: clamp(88px, 16vw, 168px);
+    line-height: 0.95;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+  }
+  .profile__handle {
+    margin-top: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 19px;
+    color: var(--text-2);
+    transition: color 0.2s var(--ease);
+  }
+  .profile__handle:hover { color: var(--text); }
+  .profile__handle :global(svg) { width: 18px; height: 18px; }
+  .profile__actions {
+    margin-top: 36px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 16px 20px;
+  }
+
+  /* ---------- Email list ---------- */
+  .mail-list {
+    max-width: 520px;
+    margin: 48px auto 0;
+    padding: 0;
+    list-style: none;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .mail-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 12px 10px 16px;
+  }
+  .mail-row + .mail-row::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 59px;
+    right: 0;
+    height: 1px;
+    background: var(--line);
+  }
+  .mail-row__icon {
+    flex: none;
+    width: 29px;
+    height: 29px;
+    border-radius: 7px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(180deg, #5ac8fa, #0a7aff);
+    color: #fff;
+  }
+  .mail-row__icon :global(svg) { width: 18px; height: 18px; stroke-width: 2; }
+  .mail-row__text { flex: 1; min-width: 0; display: grid; }
+  .mail-row__text a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 16px;
+  }
+  .mail-row__text a:hover { color: var(--link); }
+  .mail-row__label { font-size: 12px; color: var(--text-3); }
+  .mail-row .pill { flex: none; padding: 5px 12px; font-size: 13px; }
+
+  /* ---------- Explore ---------- */
   .explore {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -216,6 +302,14 @@ const sections = [
     .explore__card:last-child { grid-column: 1 / -1; }
   }
   @media (max-width: 767px) {
+    .profile { min-height: 0; }
+    .profile__avatar { width: 136px; height: 136px; }
+    .profile .orb--1 { left: calc(50% - 300px); }
+    .profile .orb--2 { left: calc(50% - 100px); top: 260px; }
+    .profile .orb--3 { left: calc(50% + 40px); top: 80px; }
+    .profile__name { margin-top: 22px; }
+    .profile__handle { font-size: 17px; }
+    .mail-list { margin-top: 36px; }
     .explore { grid-template-columns: 1fr; gap: 16px; }
     .explore__card,
     .explore__card:nth-child(-n + 2),

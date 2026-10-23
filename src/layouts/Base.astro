@@ -11,11 +11,11 @@ interface Props {
 
 const {
   title,
-  description = `${site.name} — ${site.role}. ${site.tagline}`,
+  description = `${site.name} — projects, AIGC works, papers and tools.`,
   lang = 'en',
 } = Astro.props;
 
-const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.role}`;
+const pageTitle = title ? `${title} — ${site.name}` : site.name;
 const current = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isActive = (href: string) => current === url(href).replace(/\/$/, '');
 ---
@@ -32,7 +32,9 @@ const isActive = (href: string) => current === url(href).replace(/\/$/, '');
   <meta property="og:type" content="website">
   <meta property="og:title" content={pageTitle}>
   <meta property="og:description" content={description}>
-  <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml">
+  <link rel="icon" href={url('/favicon.png')} type="image/png">
+  <link rel="apple-touch-icon" href={url('/apple-touch-icon.png')}>
+  <meta property="og:image" content={new URL(url('/avatar.webp'), Astro.site)}>
   <script is:inline>document.documentElement.classList.add('js')</script>
 </head>
 <body>

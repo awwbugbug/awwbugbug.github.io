@@ -1,6 +1,6 @@
 ---
 import SocialIcon from './SocialIcon.astro';
-import { site, socials } from '../config';
+import { emails, socials } from '../config';
 ---
 <!-- macOS-style Dock. Hover on desktop to magnify. -->
 <nav class="dock-wrap reveal" aria-label="Social links">
@@ -15,7 +15,7 @@ import { site, socials } from '../config';
     ))}
     <li class="dock__divider" aria-hidden="true"></li>
     <li>
-      <a class="dock__item" href={`mailto:${site.email}`}>
+      <a class="dock__item" href={`mailto:${emails[0].address}`}>
         <span class="app app--mail"><SocialIcon name="mail" /></span>
         <span class="dock__label">Mail</span>
       </a>

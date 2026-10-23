@@ -233,108 +233,6 @@ svg.fill, svg .fill { fill: currentColor; stroke: none; }
   100% { transform: translate(30px, -20px) scale(0.95); }
 }
 
-.hero__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.9fr);
-  align-items: center;
-  gap: 64px;
-}
-
-.hero__title {
-  font-size: clamp(40px, 6.2vw, 72px);
-  line-height: 1.05;
-  font-weight: 700;
-  letter-spacing: -0.035em;
-}
-
-.hero__lead {
-  margin-top: 24px;
-  max-width: 34ch;
-  font-size: clamp(19px, 2vw, 22px);
-  line-height: 1.4;
-  color: var(--text-2);
-  letter-spacing: -0.015em;
-}
-
-.hero__actions {
-  margin-top: 36px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px 20px;
-}
-
-/* --- iOS Contacts-style card --- */
-.contact-card {
-  border-radius: var(--radius-lg);
-  padding: 36px 28px 28px;
-  text-align: center;
-}
-
-.avatar {
-  width: 96px;
-  height: 96px;
-  margin: 0 auto 16px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  object-fit: cover;
-  background: linear-gradient(180deg, #a6abb7 0%, #858a96 100%);
-  color: #fff;
-  font-size: 38px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
-}
-
-.contact-card__name {
-  font-size: 28px;
-  font-weight: 600;
-  letter-spacing: -0.025em;
-}
-.contact-card__role {
-  margin-top: 2px;
-  font-size: 15px;
-  color: var(--text-2);
-}
-
-.contact-card__meta {
-  margin: 20px 0 24px;
-  display: grid;
-  gap: 6px;
-  font-size: 14px;
-  color: var(--text-2);
-}
-.contact-card__meta li { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #30d158;
-  box-shadow: 0 0 0 4px rgba(48, 209, 88, 0.18);
-}
-
-.contact-card__actions {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-.contact-card__actions a {
-  display: grid;
-  justify-items: center;
-  gap: 4px;
-  padding: 12px 0 10px;
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--card) 70%, transparent);
-  color: var(--accent);
-  font-size: 12px;
-  transition: transform 0.2s var(--ease), background-color 0.2s var(--ease);
-}
-.contact-card__actions a:hover { background: var(--card); }
-.contact-card__actions a:active { transform: scale(0.95); }
-.contact-card__actions svg { width: 22px; height: 22px; }
-
 /* ==========================================================================
    Sections
    ========================================================================== */
@@ -356,93 +254,7 @@ svg.fill, svg .fill { fill: currentColor; stroke: none; }
   color: var(--text-2);
 }
 
-/* ==========================================================================
-   Work — bento grid
-   ========================================================================== */
-.bento {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
-}
-
-.card {
-  border-radius: var(--radius-lg);
-  background: var(--card);
-  box-shadow: var(--shadow-card);
-  overflow: hidden;
-  transition: transform 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out);
-}
-.card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-card-hover);
-}
-
-.card__link { display: flex; flex-direction: column; height: 100%; }
-
-.card__cover {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-}
-.card__cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.8s var(--ease-out);
-}
-.card:hover .card__cover img,
-.card:hover .mock { transform: scale(1.04); }
-
-.cover--blue     { background: linear-gradient(135deg, #64d2ff 0%, #0a84ff 50%, #5e5ce6 100%); }
-.cover--sunset   { background: linear-gradient(135deg, #ffb340 0%, #ff375f 55%, #bf5af2 100%); }
-.cover--mint     { background: linear-gradient(135deg, #63e6be 0%, #30d158 40%, #64d2ff 100%); }
-.cover--graphite { background: linear-gradient(135deg, #3a3a3c 0%, #1c1c1e 100%); }
-
-.card__body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 26px 28px 28px;
-}
-.card__eyebrow {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-3);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.card__title {
-  margin-top: 6px;
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: -0.025em;
-  line-height: 1.2;
-}
-.card__desc {
-  margin-top: 8px;
-  font-size: 16px;
-  color: var(--text-2);
-  line-height: 1.5;
-}
-.card__more {
-  margin-top: auto;
-  padding-top: 18px;
-  font-size: 15px;
-  color: var(--link);
-}
-.card:hover .card__more { text-decoration: underline; }
-
-/* Featured card spans the full row and lays out horizontally */
-.card--featured { grid-column: 1 / -1; }
-.card--featured .card__link { flex-direction: row; }
-.card--featured .card__cover { flex: 1.45; aspect-ratio: auto; min-height: 380px; }
-.card--featured .card__body { flex: 1; justify-content: center; padding: 48px 44px; }
-.card--featured .card__title { font-size: 34px; }
-.card--featured .card__desc { font-size: 18px; }
-.card--featured .card__more { margin-top: 0; padding-top: 26px; }
-
+/* --- Tag chips --- */
 .tags {
   margin-top: 16px;
   display: flex;
@@ -457,130 +269,6 @@ svg.fill, svg .fill { fill: currentColor; stroke: none; }
   font-weight: 500;
   color: var(--text-2);
   letter-spacing: -0.005em;
-}
-.card .tags { margin-top: 14px; }
-.tags--lg { margin-top: 28px; gap: 8px; }
-.tags--lg li { padding: 7px 15px; font-size: 14px; background: var(--card); box-shadow: var(--shadow-card); }
-
-/* --- Placeholder "product shots" built from CSS --- */
-.mock {
-  width: 74%;
-  border-radius: 14px;
-  overflow: hidden;
-  transition: transform 0.8s var(--ease-out);
-  --glass: rgba(255, 255, 255, 0.28);
-  --glass-border: rgba(255, 255, 255, 0.45);
-  --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
-}
-.mock__bar { display: flex; gap: 7px; padding: 12px 14px; }
-.mock__bar i { width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; }
-.mock__bar i:nth-child(2) { background: #febc2e; }
-.mock__bar i:nth-child(3) { background: #28c840; }
-
-.mock__body { display: grid; gap: 10px; padding: 8px 18px 22px; }
-.mock__line { height: 10px; border-radius: 5px; background: rgba(255, 255, 255, 0.75); }
-.mock__line.accent { background: rgba(255, 255, 255, 0.95); }
-.mock__line.indent { margin-left: 18px; }
-.w-25 { width: 25%; } .w-40 { width: 40%; } .w-55 { width: 55%; } .w-70 { width: 70%; }
-
-.mock__tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
-.mock__tiles span { aspect-ratio: 1; border-radius: 10px; background: rgba(255, 255, 255, 0.4); }
-
-.mock--phone {
-  width: 38%;
-  aspect-ratio: 9 / 17;
-  border-radius: 28px;
-  margin-top: 22%;
-  position: relative;
-}
-.mock__notch { width: 34%; height: 14px; margin: 10px auto 0; border-radius: 10px; background: rgba(0, 0, 0, 0.55); }
-.mock--phone .mock__body { justify-items: center; padding-top: 24px; }
-.mock__circle { width: 46px; height: 46px; border-radius: 50%; background: rgba(255, 255, 255, 0.8); margin-bottom: 6px; }
-.mock--phone .mock__line { justify-self: stretch; margin: 0 auto; }
-
-.mock--canvas { width: 100%; height: 100%; position: relative; }
-.shape { position: absolute; }
-.shape--a { width: 34%; aspect-ratio: 1; border-radius: 50%; background: linear-gradient(135deg, #ff9f0a, #ff375f); top: 18%; left: 16%; }
-.shape--b { width: 30%; aspect-ratio: 1; border-radius: 22%; background: linear-gradient(135deg, #64d2ff, #5e5ce6); bottom: 16%; right: 18%; opacity: 0.92; }
-.shape--c { width: 18%; aspect-ratio: 1; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.8); top: 22%; right: 26%; }
-
-/* ==========================================================================
-   About — iOS Settings style list
-   ========================================================================== */
-.about {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  gap: 72px;
-  align-items: center;
-}
-.about__copy p {
-  margin-top: 22px;
-  font-size: 19px;
-  line-height: 1.55;
-  color: var(--text-2);
-}
-.about__copy strong { color: var(--text); font-weight: 600; }
-
-.settings { display: grid; gap: 28px; }
-.settings__group {
-  background: var(--card);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  box-shadow: var(--shadow-card);
-}
-.settings__row {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-height: 50px;
-  padding: 0 16px;
-  font-size: 16px;
-}
-.settings__row + .settings__row::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 59px;
-  right: 0;
-  height: 1px;
-  background: var(--line);
-}
-a.settings__row { transition: background-color 0.15s var(--ease); }
-a.settings__row:hover { background: var(--bg-alt); }
-
-.settings__icon {
-  flex: none;
-  width: 29px;
-  height: 29px;
-  border-radius: 7px;
-  display: grid;
-  place-items: center;
-  background: var(--c);
-  color: #fff;
-}
-.settings__icon svg { width: 18px; height: 18px; stroke-width: 2; }
-.settings__label { flex: 1; }
-.settings__value { color: var(--text-2); }
-.settings__chevron { color: var(--text-3); font-size: 22px; line-height: 1; }
-
-.toggle {
-  position: relative;
-  width: 51px;
-  height: 31px;
-  border-radius: 31px;
-  background: #34c759;
-}
-.toggle::after {
-  content: "";
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 27px;
-  height: 27px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), 0 1px 1px rgba(0, 0, 0, 0.16);
 }
 
 /* ==========================================================================
@@ -683,15 +371,6 @@ a.settings__row:hover { background: var(--bg-alt); }
   transform: translate(-50%, 0);
 }
 
-.connect__email {
-  margin-top: 48px;
-  text-align: center;
-  font-size: clamp(22px, 3vw, 28px);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-.connect__email a { color: var(--link); }
-.connect__email a:hover { text-decoration: underline; }
 
 /* ==========================================================================
    Footer
@@ -720,54 +399,29 @@ a.settings__row:hover { background: var(--bg-alt); }
   transition: opacity 1s var(--ease-out), transform 1s var(--ease-out);
 }
 .js .reveal.is-visible { opacity: 1; transform: none; }
-.js .card.reveal.is-visible {
-  transition: opacity 1s var(--ease-out), transform 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out);
-}
-.js .card.reveal.is-visible:hover { transform: translateY(-6px); }
 
 /* ==========================================================================
    Responsive
    ========================================================================== */
-@media (max-width: 1023px) {
-  .hero__grid { grid-template-columns: 1fr; gap: 56px; }
-  .contact-card { max-width: 400px; width: 100%; }
-  .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .bento .card:last-child { grid-column: 1 / -1; }
-  .about { grid-template-columns: 1fr; gap: 48px; }
-}
-
 @media (max-width: 767px) {
   :root { --gutter: 16px; }
   body { font-size: 16px; }
 
   .hero { padding: calc(var(--nav-h) + 56px) 0 80px; }
-  .hero__lead { margin-top: 18px; }
   .orb--1 { width: 340px; height: 340px; right: -140px; }
   .orb--2 { width: 300px; height: 300px; top: 300px; right: 40px; }
   .orb--3 { width: 260px; height: 260px; top: 520px; }
 
-  .contact-card { max-width: none; padding: 30px 20px 20px; }
-
   .section { padding: 84px 0; }
   .section__head { margin-bottom: 36px; }
-
-  .bento { grid-template-columns: 1fr; gap: 18px; }
-  .card--featured .card__link { flex-direction: column; }
-  .card--featured .card__cover { flex: none; aspect-ratio: 4 / 3; min-height: 0; }
-  .card--featured .card__body { padding: 26px 24px 28px; }
-  .card--featured .card__title { font-size: 26px; }
-  .card--featured .card__desc { font-size: 16px; }
-  .card__body { padding: 22px 24px 26px; }
-
-  .about__copy p { font-size: 17px; }
 
   /* Dock becomes an iOS home-screen grid on phones */
   .dock-wrap { padding-top: 0; }
   .dock {
     --size: 58px;
     height: auto;
-    display: grid;
-    grid-template-columns: repeat(3, auto);
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 22px 30px;
     padding: 24px 28px;
@@ -795,7 +449,6 @@ a.settings__row:hover { background: var(--bg-alt); }
   html { scroll-behavior: auto; }
   .orb { animation: none; }
   .js .reveal { opacity: 1; transform: none; transition: none; }
-  .card, .card:hover, .card:hover .mock, .card:hover .card__cover img { transform: none; }
   .app { transition: none; }
 }
 

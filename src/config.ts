@@ -1,19 +1,19 @@
 // Site-wide info. Edit this file first — it feeds the nav, footer,
-// home page, contact card and social links on every page.
+// home page and social links on every page.
 
 export const site = {
-  name: 'Your Name',
-  initials: 'YN',
-  role: 'Designer & Developer',
-  tagline: 'I build calm, considered software.',
-  intro: 'I design and engineer digital products with an obsession for detail — from the first sketch to the last pixel.',
-  location: 'Your City',
-  email: 'hello@example.com',
-  openToWork: true,
-  githubUser: 'your-username',
-  // Used to highlight your name in paper author lists
-  authorName: 'Your Name',
+  name: 'ZDZ',
+  githubUser: 'awwbugbug',
+  // Highlighted in paper author lists — use the name as printed on your papers
+  authorName: 'ZDZ',
 };
+
+// The first address is used by the Mail icon in the Dock
+export const emails = [
+  { label: 'Gmail', address: 'zdz1342979524@gmail.com' },
+  { label: 'Gmail', address: 'zdz13438552050@gmail.com' },
+  { label: 'QQ Mail', address: '1342979524@qq.com' },
+];
 
 export const nav = [
   { href: '/projects', label: 'Projects' },
@@ -23,11 +23,8 @@ export const nav = [
   { href: '/vpn', label: 'VPN' },
 ];
 
-// Remove any you don't use. `icon` must match a key in SocialIcon.astro.
+// `icon` must match a key in SocialIcon.astro: github, x, linkedin, instagram, youtube.
+// To add one: { icon: 'x', label: 'X', href: 'https://x.com/your-handle' },
 export const socials = [
-  { icon: 'github', label: 'GitHub', href: 'https://github.com/your-username' },
-  { icon: 'x', label: 'X', href: 'https://x.com/your-username' },
-  { icon: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/in/your-username' },
-  { icon: 'instagram', label: 'Instagram', href: 'https://www.instagram.com/your-username' },
-  { icon: 'youtube', label: 'YouTube', href: 'https://www.youtube.com/@your-username' },
+  { icon: 'github', label: 'GitHub', href: `https://github.com/${site.githubUser}` },
 ];
